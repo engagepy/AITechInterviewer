@@ -97,14 +97,16 @@ h1 {
 }
 
 .feature-card h3 {
-    color: var(--primary-color);
+    color: var(--primary-color) !important;
     font-size: 1.5rem;
     margin: 1rem 0;
+    -webkit-text-fill-color: var(--primary-color) !important;
 }
 
 .feature-card p {
-    color: var(--text-color);
+    color: var(--text-color) !important;
     line-height: 1.6;
+    -webkit-text-fill-color: var(--text-color) !important;
 }
 
 /* Button styling */
@@ -157,4 +159,54 @@ h2, h3, h4, h5, h6 {
 /* Ensure text is visible on dark background */
 p, li, label {
     color: white !important;
+}
+
+/* Override for feature cards text */
+.feature-card * {
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+}
+
+.feature-card .feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Roles section styling */
+.roles-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 3rem;
+}
+
+.roles-section h2 {
+    color: var(--primary-color) !important;
+    -webkit-text-fill-color: var(--primary-color) !important;
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+    text-align: center;
+}
+
+.roles-section ul {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.roles-section li {
+    color: var(--text-color) !important;
+    -webkit-text-fill-color: var(--text-color) !important;
+    margin: 0.8rem 0;
+    font-size: 1.1rem;
+    text-align: left;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.roles-section li:before {
+    content: '•';
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
 }
