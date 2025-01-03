@@ -264,6 +264,7 @@ def collect_candidate_info():
                         💻 **Recommended Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
 
+
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
@@ -303,10 +304,30 @@ def show_interview_page():
         with st.form("interview_config_form"):
             col1, col2 = st.columns(2)
             with col1:
+                # Get available languages for the role
+                available_languages = role_info["languages"]
+
+                # Get recommended languages from CV analysis
+                recommended_languages = st.session_state.get('recommended_languages', [])
+
+                # Find the default language (first recommended language that's available for the role)
+                default_index = 0
+                if recommended_languages:
+                    for i, lang in enumerate(available_languages):
+                        if lang in recommended_languages:
+                            default_index = i
+                            break
+
                 language = st.selectbox(
                     "Select Programming Language",
-                    options=role_info["languages"]
+                    options=available_languages,
+                    index=default_index,
+                    help="Languages are suggested based on your CV and role requirements"
                 )
+
+                # Show recommendation indicator if the selected language is recommended
+                if language in recommended_languages:
+                    st.success("✨ This language is recommended based on your experience")
 
             difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"]) #Use suggested difficulty if available
             with col2:
