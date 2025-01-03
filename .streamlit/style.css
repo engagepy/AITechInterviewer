@@ -3,10 +3,10 @@
     --primary-color: #1a73e8;
     --secondary-color: #34a853;
     --accent-color: #4285f4;
-    --background-color: #f8f9fa;
-    --text-color: #202124;
+    --background-color: #121212;
+    --text-color: #ffffff;
     --hover-color: #1557b0;
-    --card-bg: #ffffff;
+    --card-bg: rgba(26, 115, 232, 0.1);
 }
 
 /* Main container styling */
@@ -14,6 +14,7 @@
     max-width: 1200px;
     margin: 0 auto;
     padding: 2rem;
+    background-color: var(--background-color);
 }
 
 /* Title styling */
@@ -50,26 +51,10 @@ h1 {
 }
 
 @keyframes laser-line {
-    0% {
-        width: 0;
-        left: 0;
-        right: auto;
-    }
-    50% {
-        width: 100%;
-        left: 0;
-        right: auto;
-    }
-    51% {
-        width: 100%;
-        right: 0;
-        left: auto;
-    }
-    100% {
-        width: 0;
-        right: 0;
-        left: auto;
-    }
+    0% { width: 0; left: 0; right: auto; }
+    50% { width: 100%; left: 0; right: auto; }
+    51% { width: 100%; right: 0; left: auto; }
+    100% { width: 0; right: 0; left: auto; }
 }
 
 /* Features grid */
@@ -86,14 +71,34 @@ h1 {
     border-radius: 12px;
     padding: 1.5rem;
     text-align: center;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
     transition: all 0.3s ease;
     height: 100%;
+    position: relative;
+    overflow: hidden;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(26, 115, 232, 0.2);
+    animation: cardGlow 3s ease-in-out infinite;
+}
+
+@keyframes cardGlow {
+    0% {
+        box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
+        border-color: rgba(26, 115, 232, 0.2);
+    }
+    50% {
+        box-shadow: 0 4px 25px rgba(52, 168, 83, 0.3);
+        border-color: rgba(52, 168, 83, 0.3);
+    }
+    100% {
+        box-shadow: 0 4px 15px rgba(26, 115, 232, 0.2);
+        border-color: rgba(26, 115, 232, 0.2);
+    }
 }
 
 .feature-card:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(26, 115, 232, 0.2);
+    box-shadow: 0 8px 25px rgba(26, 115, 232, 0.3);
 }
 
 .feature-card h3 {
@@ -178,6 +183,8 @@ p, li, label {
     border-radius: 12px;
     padding: 2rem;
     margin-top: 3rem;
+    border: 1px solid rgba(26, 115, 232, 0.2);
+    animation: cardGlow 3s ease-in-out infinite;
 }
 
 .roles-section h2 {
@@ -220,6 +227,20 @@ p, li, label {
     background: linear-gradient(45deg, #1a73e8, #34a853);
     color: white;
     font-size: 0.8rem;
+    font-weight: 500;
+    animation: glow 2s ease-in-out infinite;
+}
+
+/* Mini AI badge for feature cards */
+.mini-ai-badge {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #1a73e8, #34a853);
+    color: white;
+    font-size: 0.7rem;
     font-weight: 500;
     animation: glow 2s ease-in-out infinite;
 }

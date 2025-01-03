@@ -215,6 +215,7 @@ def show_welcome_page():
     with col1:
         st.markdown("""
         <div class="feature-card">
+            <div class="mini-ai-badge">AI</div>
             <div class="feature-icon">📊</div>
             <h3>Real-time Analytics</h3>
             <p>Comprehensive performance metrics and detailed insights</p>
@@ -224,6 +225,7 @@ def show_welcome_page():
     with col2:
         st.markdown("""
         <div class="feature-card">
+            <div class="mini-ai-badge">AI</div>
             <div class="feature-icon">🎯</div>
             <h3>Tailored Assessment</h3>
             <p>Dynamic question generation based on expertise and experience</p>
@@ -233,6 +235,7 @@ def show_welcome_page():
     with col3:
         st.markdown("""
         <div class="feature-card">
+            <div class="mini-ai-badge">AI</div>
             <div class="feature-icon">✨</div>
             <h3>Instant Feedback</h3>
             <p>Detailed reports and recommendations for improvement</p>
