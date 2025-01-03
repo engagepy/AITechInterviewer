@@ -234,6 +234,9 @@ def collect_candidate_info():
                         st.session_state.cv_uploaded = True
                         st.session_state.cv_analysis = analysis  # Store full analysis
 
+                        # Show verification animations
+                        show_verification_animations()
+
                         # Parse years of experience
                         try:
                             exp_str = analysis['years_of_experience'].lower().split()[0]
@@ -449,6 +452,28 @@ def show_results_page():
     if st.button("Start New Interview"):
         reset_session()
         st.rerun()
+
+def show_verification_animations():
+    """Show dummy verification animations"""
+    with st.spinner("Processing verifications..."):
+        # LinkedIn API Verification
+        time.sleep(1)
+        st.success("✅ LinkedIn API Verification (Success)")
+
+        # Github Profile Analysis
+        time.sleep(0.8)
+        st.success("✅ Github Profile Analysis (Success)")
+
+        # Past Experience Verification
+        time.sleep(1.2)
+        st.success("✅ Past Experience Verification Emails (Sent)")
+
+        # Culture Alignment
+        time.sleep(0.7)
+        st.success("✅ Culture Alignment (Verified)")
+
+        time.sleep(0.5)
+
 
 def main():
     initialize_session_state()
