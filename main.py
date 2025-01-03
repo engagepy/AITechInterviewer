@@ -100,13 +100,23 @@ TECH_ROLES = {
 def analyze_cv(cv_content):
     """Analyze CV content and suggest a role"""
     try:
-        prompt = f"""Analyze this CV and extract the following information:
+        prompt = f"""Analyze this CV and extract the following information with high attention to detail:
         1. The candidate's full name from the CV
         2. The most appropriate technical role from these options: {', '.join(TECH_ROLES.keys())}
-        3. Consider the candidate's experience, skills, and technologies mentioned
+        3. Analyze work experience meticulously:
+           - Find the earliest non-internship full-time job start date
+           - Compare it with current date ({datetime.now().strftime('%B %Y')})
+           - Calculate total years of experience excluding internships
+           - Format experience as 'X years Y months' or 'X-Y years' range
         4. Extract education details, including degree and institution
-        5. List key technical and soft skills
+        5. List key technical and soft skills with confidence levels
         6. For the selected role, identify the most relevant programming languages or tools
+
+        Important: When calculating experience:
+        - Exclude internships and part-time positions
+        - Only count from first full-time role
+        - Calculate up to current date
+        - If exact dates aren't clear, provide a conservative estimate
 
         CV Content:
         {cv_content}
@@ -120,7 +130,12 @@ def analyze_cv(cv_content):
             "education": "detailed education background",
             "key_skills": ["list of key technical and soft skills"],
             "recommended_languages": ["list of relevant programming languages"],
-            "years_of_experience": "estimated years of experience"
+            "years_of_experience": "precise experience calculation",
+            "experience_details": {{
+                "first_job_date": "YYYY-MM",
+                "excluded_internships": ["list of excluded positions"],
+                "calculation_explanation": "explanation of how experience was calculated"
+            }}
         }}
         """
 
@@ -234,12 +249,14 @@ def collect_candidate_info():
                         st.session_state.cv_uploaded = True
                         st.session_state.cv_analysis = analysis  # Store full analysis
 
-                        # Show verification animations
-                        show_verification_animations()
+                        # Show verification animations and store the container
+                        st.session_state.animation_container = show_verification_animations()
 
-                        # Parse years of experience
+                        # Parse years of experience from detailed analysis
                         try:
+                            exp_details = analysis.get('experience_details', {})
                             exp_str = analysis['years_of_experience'].lower().split()[0]
+
                             if '-' in exp_str:
                                 low, high = map(float, exp_str.split('-'))
                                 years = (low + high) / 2
@@ -270,6 +287,7 @@ def collect_candidate_info():
                         ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
 
                         ⏳ **Experience:** {analysis['years_of_experience']}
+                        {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
 
                         💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
@@ -289,6 +307,7 @@ def collect_candidate_info():
             ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
 
             ⏳ **Experience:** {analysis['years_of_experience']}
+            {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
 
             💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
             """)
@@ -455,24 +474,31 @@ def show_results_page():
 
 def show_verification_animations():
     """Show dummy verification animations"""
-    with st.spinner("Processing verifications..."):
-        # LinkedIn API Verification
-        time.sleep(1)
-        st.success("✅ LinkedIn API Verification (Success)")
+    # Create a container for persistent animations
+    animation_container = st.empty()
 
-        # Github Profile Analysis
-        time.sleep(0.8)
-        st.success("✅ Github Profile Analysis (Success)")
+    with animation_container.container():
+        with st.spinner("Processing verifications..."):
+            # LinkedIn API Verification
+            time.sleep(1)
+            st.success("✅ LinkedIn API Verification (Success)")
 
-        # Past Experience Verification
-        time.sleep(1.2)
-        st.success("✅ Past Experience Verification Emails (Sent)")
+            # Github Profile Analysis
+            time.sleep(0.8)
+            st.success("✅ Github Profile Analysis (Success)")
 
-        # Culture Alignment
-        time.sleep(0.7)
-        st.success("✅ Culture Alignment (Verified)")
+            # Past Experience Verification
+            time.sleep(1.2)
+            st.success("✅ Past Experience Verification Emails (Sent)")
 
-        time.sleep(0.5)
+            # Culture Alignment
+            time.sleep(0.7)
+            st.success("✅ Culture Alignment (Verified)")
+
+            time.sleep(0.5)
+
+    # Return container to maintain the animations
+    return animation_container
 
 
 def main():

@@ -100,6 +100,16 @@ def create_pdf_report(analytics_data, figures):
         story.append(Paragraph("CV Analysis", styles['Heading2']))
         story.append(Paragraph(f"Education: {cv_analysis.get('education', 'Not specified')}", styles['Normal']))
         story.append(Paragraph(f"Years of Experience: {cv_analysis.get('years_of_experience', 'Not specified')}", styles['Normal']))
+
+        # Add detailed experience information
+        if 'experience_details' in cv_analysis:
+            exp_details = cv_analysis['experience_details']
+            story.append(Paragraph(f"First Job Date: {exp_details.get('first_job_date', 'Not specified')}", styles['Normal']))
+            if exp_details.get('excluded_internships'):
+                story.append(Paragraph("Excluded Internships:", styles['Normal']))
+                for internship in exp_details['excluded_internships']:
+                    story.append(Paragraph(f"• {internship}", styles['Normal']))
+
         story.append(Paragraph("Key Skills:", styles['Normal']))
         for skill in cv_analysis.get('key_skills', []):
             story.append(Paragraph(f"• {skill}", styles['Normal']))
