@@ -213,9 +213,7 @@ def collect_candidate_info():
     col1, col2 = st.columns(2)
 
     with col1:
-        name = st.text_input("Full Name")
-
-        # CV Upload outside the form
+        # Keep CV upload outside the form as it needs to trigger immediate analysis
         uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
         if uploaded_file is not None and not st.session_state.cv_uploaded:
             cv_content = extract_text_from_pdf(uploaded_file.getvalue())
@@ -227,18 +225,15 @@ def collect_candidate_info():
                         st.session_state.recommended_languages = analysis["recommended_languages"]
                         st.session_state.cv_uploaded = True
 
-                        # Parse years of experience string to determine difficulty
+                        # Parse years of experience
                         try:
-                            exp_str = analysis['years_of_experience'].lower().split()[0]  # Get first part of string
+                            exp_str = analysis['years_of_experience'].lower().split()[0]
                             if '-' in exp_str:
-                                # Handle range (e.g., "2-3")
                                 low, high = map(float, exp_str.split('-'))
                                 years = (low + high) / 2
                             else:
-                                # Handle single number
                                 years = float(exp_str)
 
-                            # Determine difficulty based on experience
                             if years < 1:
                                 difficulty = "Easy"
                             elif years < 3:
@@ -247,7 +242,6 @@ def collect_candidate_info():
                                 difficulty = "Hard"
                             st.session_state.suggested_difficulty = difficulty
                         except (ValueError, IndexError):
-                            # Default to Medium if parsing fails
                             st.session_state.suggested_difficulty = "Medium"
                             st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
@@ -264,10 +258,11 @@ def collect_candidate_info():
                         💻 **Recommended Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
 
-
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
+            name = st.text_input("Full Name")
+
             with col2:
                 st.markdown("### Start Your Assessment")
                 role = st.selectbox(
@@ -279,20 +274,19 @@ def collect_candidate_info():
                 if st.session_state.suggested_role and role != st.session_state.suggested_role:
                     st.info("Note: You've selected a different expertise than suggested based on your CV.")
 
-                # Submit button with better visibility
-                st.markdown("<br>", unsafe_allow_html=True)
-                submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
+            # Submit button inside the form
+            submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
 
-                if submitted and name and role:
-                    st.session_state.candidate_info = {
-                        "name": name,
-                        "role": role,
-                        "id": st.session_state.candidate_id,
-                        "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                    }
-                    st.session_state.profile_completed = True
-                    st.session_state.page = 'interview'
-                    st.rerun()
+            if submitted and name and role:
+                st.session_state.candidate_info = {
+                    "name": name,
+                    "role": role,
+                    "id": st.session_state.candidate_id,
+                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                st.session_state.profile_completed = True
+                st.session_state.page = 'interview'
+                st.rerun()
     else:
         st.info("👆 Please upload your CV to proceed with the assessment")
 
