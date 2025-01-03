@@ -40,7 +40,18 @@ def generate_questions(language, difficulty):
         st.write("✨ Processing response...")
 
         # Parse the response
-        questions = json.loads(response.choices[0].message.content)["questions"]
+        try:
+            response_content = response.choices[0].message.content
+            response_json = json.loads(response_content)
+            if "questions" not in response_json:
+                raise ValueError("Response missing 'questions' array")
+            questions = response_json["questions"]
+        except json.JSONDecodeError as e:
+            st.error("Failed to parse API response as JSON")
+            return None
+        except KeyError as e:
+            st.error("Invalid response format from API")
+            return None
 
         # Validate the questions format
         for question in questions:

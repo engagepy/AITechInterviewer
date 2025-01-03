@@ -154,6 +154,16 @@ def collect_candidate_info():
 
             # CV Upload
             uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
+            if uploaded_file is not None and not st.session_state.cv_uploaded:
+                cv_content = extract_text_from_pdf(uploaded_file.getvalue())
+                if cv_content:
+                    with st.spinner("Analyzing your CV..."):
+                        analysis = analyze_cv(cv_content)
+                        if analysis:
+                            st.session_state.suggested_role = analysis["suggested_role"]
+                            st.session_state.cv_uploaded = True
+                            st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
+                            st.info(f"Reasoning: {analysis['reasoning']}")
 
         with col2:
             role = st.selectbox(
@@ -170,17 +180,6 @@ def collect_candidate_info():
         submitted = st.form_submit_button("Start Technical Interview")
 
         if submitted and name and age and role:
-            if uploaded_file is not None and not st.session_state.cv_uploaded:
-                cv_content = extract_text_from_pdf(uploaded_file.getvalue())
-                if cv_content:
-                    with st.spinner("Analyzing your CV..."):
-                        analysis = analyze_cv(cv_content)
-                        if analysis:
-                            st.session_state.suggested_role = analysis["suggested_role"]
-                            st.session_state.cv_uploaded = True
-                            st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
-                            st.info(f"Reasoning: {analysis['reasoning']}")
-
             st.session_state.candidate_info = {
                 "name": name,
                 "age": age,
