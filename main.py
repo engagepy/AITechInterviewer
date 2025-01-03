@@ -56,29 +56,44 @@ def reset_session():
 # Tech roles configuration
 TECH_ROLES = {
     "Frontend Developer": {
-        "languages": ["JavaScript", "TypeScript"],
+        "languages": ["JavaScript", "TypeScript", "React", "Angular", "Vue.js"],
         "difficulty": "Medium",
         "keywords": ["react", "angular", "vue", "html", "css", "frontend", "ui", "ux"]
     },
     "Backend Developer": {
-        "languages": ["Python", "Java", "Go"],
+        "languages": ["Python", "Java", "Go", "Node.js", "Ruby"],
         "difficulty": "Hard",
         "keywords": ["backend", "api", "database", "server", "django", "spring", "golang"]
     },
     "Full Stack Developer": {
-        "languages": ["JavaScript", "Python", "Java"],
+        "languages": ["JavaScript", "Python", "Java", "TypeScript", "PHP"],
         "difficulty": "Hard",
         "keywords": ["fullstack", "full-stack", "frontend", "backend", "web"]
     },
     "DevOps Engineer": {
-        "languages": ["Python", "Go", "Shell"],
+        "languages": ["Python", "Go", "Shell", "Ruby", "JavaScript"],
         "difficulty": "Medium",
         "keywords": ["devops", "ci/cd", "aws", "docker", "kubernetes", "infrastructure"]
     },
     "Mobile Developer": {
-        "languages": ["Java", "Swift", "Kotlin"],
+        "languages": ["Java", "Swift", "Kotlin", "React Native", "Flutter"],
         "difficulty": "Medium",
         "keywords": ["mobile", "android", "ios", "react native", "flutter"]
+    },
+    "Product Manager": {
+        "languages": ["Agile", "Scrum", "Kanban", "Product Strategy", "User Stories"],
+        "difficulty": "Medium",
+        "keywords": ["product", "agile", "scrum", "jira", "miro", "roadmap", "user stories", "backlog"]
+    },
+    "Salesforce Developer": {
+        "languages": ["Apex", "Lightning Web Components", "Visualforce", "SOQL", "JavaScript"],
+        "difficulty": "Medium",
+        "keywords": ["salesforce", "apex", "lwc", "visualforce", "soql", "crm"]
+    },
+    "AWS Cloud Engineer": {
+        "languages": ["Python", "Shell", "CloudFormation", "Terraform", "AWS CLI"],
+        "difficulty": "Hard",
+        "keywords": ["aws", "cloud", "ec2", "s3", "lambda", "cloudformation", "terraform"]
     }
 }
 
@@ -87,6 +102,8 @@ def analyze_cv(cv_content):
     try:
         prompt = f"""Analyze this CV and suggest the most appropriate technical role from the following options: {', '.join(TECH_ROLES.keys())}.
         Consider the candidate's experience, skills, and technologies mentioned.
+        For the selected role, also identify the most relevant programming languages or tools from their experience.
+
         CV Content:
         {cv_content}
 
@@ -94,7 +111,9 @@ def analyze_cv(cv_content):
         {{
             "suggested_role": "one of the roles listed above",
             "confidence": "score between 0 and 1",
-            "reasoning": "brief explanation for the suggestion"
+            "reasoning": "brief explanation for the suggestion",
+            "recommended_languages": ["list", "of", "relevant", "languages"],
+            "years_of_experience": "estimated years of experience"
         }}
         """
 
@@ -104,7 +123,13 @@ def analyze_cv(cv_content):
             response_format={"type": "json_object"}
         )
 
-        return json.loads(response.choices[0].message.content)
+        analysis = json.loads(response.choices[0].message.content)
+
+        # Filter languages based on the suggested role
+        role_languages = TECH_ROLES[analysis["suggested_role"]]["languages"]
+        analysis["recommended_languages"] = [lang for lang in analysis["recommended_languages"] if lang in role_languages]
+
+        return analysis
     except Exception as e:
         st.error(f"Error analyzing CV: {str(e)}")
         return None
@@ -154,16 +179,18 @@ def collect_candidate_info():
 
             # CV Upload
             uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
-            if uploaded_file is not None and not st.session_state.cv_uploaded:
+            if uploaded_file is not None:
                 cv_content = extract_text_from_pdf(uploaded_file.getvalue())
                 if cv_content:
                     with st.spinner("Analyzing your CV..."):
                         analysis = analyze_cv(cv_content)
                         if analysis:
                             st.session_state.suggested_role = analysis["suggested_role"]
+                            st.session_state.recommended_languages = analysis["recommended_languages"]
                             st.session_state.cv_uploaded = True
                             st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
                             st.info(f"Reasoning: {analysis['reasoning']}")
+                            st.info(f"Estimated Experience: {analysis['years_of_experience']} years")
 
         with col2:
             role = st.selectbox(

@@ -95,13 +95,6 @@ def create_pdf_report(analytics_data, figures):
     story.append(Paragraph(f"Average Time per Question: {analytics_data['avg_time']:.1f}s", styles['Normal']))
     story.append(Spacer(1, 20))
 
-    # Add performance charts
-    story.append(Paragraph("Performance Analysis", styles['Heading2']))
-    for title, fig in figures.items():
-        story.append(Paragraph(title, styles['Heading3']))
-        story.append(fig_to_img(fig))
-        story.append(Spacer(1, 20))
-
     # Analysis
     if analytics_data['notes_analysis']:
         story.append(Paragraph("Detailed Analysis", styles['Heading2']))
