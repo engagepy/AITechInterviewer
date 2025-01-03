@@ -302,71 +302,71 @@ def collect_candidate_info():
                 💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                 """)
 
-    # Only show the form after CV analysis
-    if st.session_state.cv_uploaded:
-        with st.form("candidate_profile_form"):
-            with col2:
-                st.markdown("### Additional Information")
+        # Only show the form after CV analysis
+        if st.session_state.cv_uploaded:
+            with st.form("candidate_profile_form"):
+                with col2:
+                    st.markdown("### Additional Information")
 
-                # CTC Range dropdown
-                ctc_ranges = [
-                    "Select CTC Range",
-                    "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
-                    "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
-                ]
-                ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
+                    # CTC Range dropdown
+                    ctc_ranges = [
+                        "Select CTC Range",
+                        "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
+                        "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
+                    ]
+                    ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
 
-                # Location preferences
-                preferred_location = st.text_input("Preferred Location")
-                willing_to_relocate = st.selectbox("Willing to Relocate", options=["Select Option", "Yes", "No"])
+                    # Location preferences
+                    preferred_location = st.text_input("Preferred Location")
+                    willing_to_relocate = st.selectbox("Willing to Relocate", options=["Select Option", "Yes", "No"])
 
-                st.markdown("### Role Selection")
-                role = st.selectbox(
-                    "Expertise",
-                    options=["Select Role"] + list(TECH_ROLES.keys()),
-                    index=list(["Select Role"] + list(TECH_ROLES.keys())).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
-                )
+                    st.markdown("### Role Selection")
+                    role = st.selectbox(
+                        "Expertise",
+                        options=["Select Role"] + list(TECH_ROLES.keys()),
+                        index=list(["Select Role"] + list(TECH_ROLES.keys())).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
+                    )
 
-                if st.session_state.suggested_role and role != "Select Role":
-                    if role == st.session_state.suggested_role:
-                        st.success("✨ AI Recommended Role")
-                    else:
-                        st.info("Note: You've selected a different expertise than suggested based on your CV.")
+                    if st.session_state.suggested_role and role != "Select Role":
+                        if role == st.session_state.suggested_role:
+                            st.success("✨ AI Recommended Role")
+                        else:
+                            st.info("Note: You've selected a different expertise than suggested based on your CV.")
 
-                # Form validation
-                form_complete = (
-                    ctc_range != "Select CTC Range" and
-                    preferred_location.strip() != "" and
-                    willing_to_relocate != "Select Option" and
-                    role != "Select Role"
-                )
+                    # Form validation
+                    form_complete = (
+                        ctc_range != "Select CTC Range" and
+                        preferred_location.strip() != "" and
+                        willing_to_relocate != "Select Option" and
+                        role != "Select Role"
+                    )
 
-                # Submit button with conditional enable/disable
-                submitted = st.form_submit_button(
-                    "Start Technical Interview",
-                    disabled=not form_complete,
-                    use_container_width=True
-                )
+                    # Submit button with conditional enable/disable
+                    submitted = st.form_submit_button(
+                        "Start Technical Interview",
+                        disabled=not form_complete,
+                        use_container_width=True
+                    )
 
-                if not form_complete and submitted:
-                    st.error("Please fill in all fields to proceed")
+                    if not form_complete and submitted:
+                        st.error("Please fill in all fields to proceed")
 
-                if submitted and form_complete:
-                    st.session_state.candidate_info = {
-                        "name": st.session_state.candidate_name,
-                        "role": role,
-                        "id": st.session_state.candidate_id,
-                        "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                        "ctc_range": ctc_range,
-                        "preferred_location": preferred_location,
-                        "willing_to_relocate": willing_to_relocate,
-                        "cv_analysis": st.session_state.cv_analysis
-                    }
-                    st.session_state.profile_completed = True
-                    st.session_state.page = 'interview'
-                    st.rerun()
-    else:
-        st.info("👆 Please upload your CV to proceed with the assessment")
+                    if submitted and form_complete:
+                        st.session_state.candidate_info = {
+                            "name": st.session_state.candidate_name,
+                            "role": role,
+                            "id": st.session_state.candidate_id,
+                            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                            "ctc_range": ctc_range,
+                            "preferred_location": preferred_location,
+                            "willing_to_relocate": willing_to_relocate,
+                            "cv_analysis": st.session_state.cv_analysis
+                        }
+                        st.session_state.profile_completed = True
+                        st.session_state.page = 'interview'
+                        st.rerun()
+        else:
+            st.info("👆 Please upload your CV to proceed with the assessment")
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
