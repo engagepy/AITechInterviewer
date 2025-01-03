@@ -169,54 +169,67 @@ def show_welcome_page():
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
 
-    # Create a form for better submission handling
-    with st.form("candidate_profile_form"):
-        col1, col2 = st.columns(2)
+    col1, col2 = st.columns(2)
 
-        with col1:
-            name = st.text_input("Full Name", key="form_name")
-            age = st.number_input("Age", min_value=18, max_value=100, value=25, key="form_age")
+    with col1:
+        name = st.text_input("Full Name")
+        age = st.number_input("Age", min_value=18, max_value=100, value=25)
 
-            # CV Upload
-            uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
-            if uploaded_file is not None:
-                cv_content = extract_text_from_pdf(uploaded_file.getvalue())
-                if cv_content:
-                    with st.spinner("Analyzing your CV..."):
-                        analysis = analyze_cv(cv_content)
-                        if analysis:
-                            st.session_state.suggested_role = analysis["suggested_role"]
-                            st.session_state.recommended_languages = analysis["recommended_languages"]
-                            st.session_state.cv_uploaded = True
-                            st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
-                            st.info(f"Reasoning: {analysis['reasoning']}")
-                            st.info(f"Estimated Experience: {analysis['years_of_experience']} years")
+        # CV Upload outside the form
+        uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
+        if uploaded_file is not None and not st.session_state.cv_uploaded:
+            cv_content = extract_text_from_pdf(uploaded_file.getvalue())
+            if cv_content:
+                with st.spinner("Analyzing your CV..."):
+                    analysis = analyze_cv(cv_content)
+                    if analysis:
+                        st.session_state.suggested_role = analysis["suggested_role"]
+                        st.session_state.recommended_languages = analysis["recommended_languages"]
+                        st.session_state.cv_uploaded = True
 
-        with col2:
-            role = st.selectbox(
-                "Position Applied For",
-                options=list(TECH_ROLES.keys()),
-                index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0,
-                key="form_role"
-            )
+                        # Display analysis results
+                        st.success("✅ CV Analysis Complete!")
+                        st.markdown(f"""
+                        ### Analysis Results
+                        📋 **Suggested Role:** {analysis['suggested_role']}
 
-            if st.session_state.suggested_role and role != st.session_state.suggested_role:
-                st.info("Note: You've selected a different role than suggested based on your CV.")
+                        🔍 **Reasoning:** {analysis['reasoning']}
 
-        # Submit button must be the last element in the form
-        submitted = st.form_submit_button("Start Technical Interview")
+                        ⏳ **Experience:** {analysis['years_of_experience']} years
 
-        if submitted and name and age and role:
-            st.session_state.candidate_info = {
-                "name": name,
-                "age": age,
-                "role": role,
-                "id": st.session_state.candidate_id,
-                "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-            }
-            st.session_state.profile_completed = True
-            st.session_state.page = 'interview'
-            st.rerun()
+                        💻 **Recommended Technologies:** {', '.join(analysis['recommended_languages'])}
+                        """)
+
+    # Only show the form after CV analysis
+    if st.session_state.cv_uploaded:
+        with st.form("candidate_profile_form"):
+            with col2:
+                role = st.selectbox(
+                    "Position Applied For",
+                    options=list(TECH_ROLES.keys()),
+                    index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
+                )
+
+                if st.session_state.suggested_role and role != st.session_state.suggested_role:
+                    st.info("Note: You've selected a different role than suggested based on your CV.")
+
+            # Submit button
+            submitted = st.form_submit_button("Start Technical Interview")
+
+            if submitted and name and age and role:
+                st.session_state.candidate_info = {
+                    "name": name,
+                    "age": age,
+                    "role": role,
+                    "id": st.session_state.candidate_id,
+                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                }
+                st.session_state.profile_completed = True
+                st.session_state.page = 'interview'
+                st.rerun()
+    else:
+        st.info("👆 Please upload your CV to proceed with the assessment")
+
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
