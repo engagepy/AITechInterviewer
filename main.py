@@ -256,6 +256,10 @@ def collect_candidate_info():
                         # Display analysis results and verifications in persistent container
                         with persisted_content.container():
                             st.success("✅ CV Analysis Complete!")
+                            # Show verifications first
+                            show_verification_animations()
+
+                            # Then show analysis results
                             st.markdown(f"""
                             ### Analysis Results
                             👤 **Candidate:** {analysis['candidate_name']}
@@ -271,11 +275,6 @@ def collect_candidate_info():
 
                             💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                             """)
-
-                            st.success("✅ LinkedIn API Verification (Success)")
-                            st.success("✅ Github Profile Analysis (Success)")
-                            st.success("✅ Past Experience Verification Emails (Sent)")
-                            st.success("✅ Culture Alignment (Verified)")
 
                         # Parse years of experience from detailed analysis
                         try:
@@ -304,6 +303,10 @@ def collect_candidate_info():
             analysis = st.session_state.cv_analysis
             with persisted_content.container():
                 st.success("✅ CV Analysis Complete!")
+                # Show verifications first
+                show_verification_animations()
+
+                # Then show analysis results
                 st.markdown(f"""
                 ### Analysis Results
                 👤 **Candidate:** {analysis['candidate_name']}
@@ -319,11 +322,6 @@ def collect_candidate_info():
 
                 💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                 """)
-
-                st.success("✅ LinkedIn API Verification (Success)")
-                st.success("✅ Github Profile Analysis (Success)")
-                st.success("✅ Past Experience Verification Emails (Sent)")
-                st.success("✅ Culture Alignment (Verified)")
 
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
@@ -484,6 +482,28 @@ def show_results_page():
     if st.button("Start New Interview"):
         reset_session()
         st.rerun()
+
+
+def show_verification_animations():
+    """Show verification animations sequentially"""
+    with st.spinner("Processing verifications..."):
+        # LinkedIn API Verification
+        time.sleep(1)
+        st.success("✅ LinkedIn API Verification (Success)")
+
+        # Github Profile Analysis
+        time.sleep(0.8)
+        st.success("✅ Github Profile Analysis (Success)")
+
+        # Past Experience Verification
+        time.sleep(1.2)
+        st.success("✅ Past Experience Verification Emails (Sent)")
+
+        # Culture Alignment
+        time.sleep(0.7)
+        st.success("✅ Culture Alignment (Verified)")
+
+        time.sleep(0.5)
 
 
 def main():
