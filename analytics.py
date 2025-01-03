@@ -83,11 +83,29 @@ def create_pdf_report(analytics_data, figures):
     story.append(Paragraph(f"ID: {analytics_data['candidate_info']['id']}", styles['Normal']))
     story.append(Paragraph(f"Role: {analytics_data['candidate_info']['role']}", styles['Normal']))
 
+    # Additional Candidate Information
+    story.append(Paragraph(f"Expected CTC: {analytics_data['candidate_info']['ctc_range']}", styles['Normal']))
+    story.append(Paragraph(f"Preferred Location: {analytics_data['candidate_info']['preferred_location']}", styles['Normal']))
+    story.append(Paragraph(f"Willing to Relocate: {analytics_data['candidate_info']['willing_to_relocate']}", styles['Normal']))
+
     # Convert timestamp to NY timezone
     date_obj = datetime.strptime(analytics_data['candidate_info']['datetime'], "%Y-%m-%d %H:%M:%S")
     ny_time = pytz.utc.localize(date_obj).astimezone(ny_timezone)
     story.append(Paragraph(f"Date: {ny_time.strftime('%Y-%m-%d %I:%M:%S %p %Z')}", styles['Normal']))
     story.append(Spacer(1, 20))
+
+    # CV Analysis Section
+    if 'cv_analysis' in analytics_data['candidate_info']:
+        cv_analysis = analytics_data['candidate_info']['cv_analysis']
+        story.append(Paragraph("CV Analysis", styles['Heading2']))
+        story.append(Paragraph(f"Education: {cv_analysis.get('education', 'Not specified')}", styles['Normal']))
+        story.append(Paragraph(f"Years of Experience: {cv_analysis.get('years_of_experience', 'Not specified')}", styles['Normal']))
+        story.append(Paragraph("Key Skills:", styles['Normal']))
+        for skill in cv_analysis.get('key_skills', []):
+            story.append(Paragraph(f"• {skill}", styles['Normal']))
+        story.append(Spacer(1, 10))
+        story.append(Paragraph(f"Role Match Confidence: {cv_analysis.get('confidence', 0)*100:.0f}%", styles['Normal']))
+        story.append(Spacer(1, 20))
 
     # Performance Summary
     story.append(Paragraph("Performance Summary", styles['Heading2']))

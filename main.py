@@ -103,8 +103,10 @@ def analyze_cv(cv_content):
         prompt = f"""Analyze this CV and extract the following information:
         1. The candidate's full name from the CV
         2. The most appropriate technical role from these options: {', '.join(TECH_ROLES.keys())}
-        3. Consider the candidate's experience, skills, and technologies mentioned.
-        4. For the selected role, identify the most relevant programming languages or tools.
+        3. Consider the candidate's experience, skills, and technologies mentioned
+        4. Extract education details, including degree and institution
+        5. List key technical and soft skills
+        6. For the selected role, identify the most relevant programming languages or tools
 
         CV Content:
         {cv_content}
@@ -115,7 +117,9 @@ def analyze_cv(cv_content):
             "suggested_role": "one of the roles listed above",
             "confidence": "score between 0 and 1",
             "reasoning": "brief explanation for the suggestion",
-            "recommended_languages": ["list", "of", "relevant", "languages"],
+            "education": "detailed education background",
+            "key_skills": ["list of key technical and soft skills"],
+            "recommended_languages": ["list of relevant programming languages"],
             "years_of_experience": "estimated years of experience"
         }}
         """
@@ -228,6 +232,7 @@ def collect_candidate_info():
                         st.session_state.suggested_role = analysis["suggested_role"]
                         st.session_state.recommended_languages = analysis["recommended_languages"]
                         st.session_state.cv_uploaded = True
+                        st.session_state.cv_analysis = analysis  # Store full analysis
 
                         # Parse years of experience
                         try:
@@ -257,11 +262,13 @@ def collect_candidate_info():
 
                         📋 **Suggested Role:** {analysis['suggested_role']}
 
-                        🔍 **Reasoning:** {analysis['reasoning']}
+                        🎓 **Education:** {analysis.get('education', 'Not specified')}
+
+                        ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
 
                         ⏳ **Experience:** {analysis['years_of_experience']}
 
-                        💻 **Recommended Technologies:** {', '.join(analysis['recommended_languages'])}
+                        💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
 
 
@@ -269,7 +276,20 @@ def collect_candidate_info():
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
             with col2:
-                st.markdown("### Start Your Assessment")
+                st.markdown("### Additional Information")
+
+                # CTC Range dropdown
+                ctc_ranges = [
+                    "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
+                    "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
+                ]
+                ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
+
+                # Location preferences
+                preferred_location = st.text_input("Preferred Location")
+                willing_to_relocate = st.selectbox("Willing to Relocate", options=["Yes", "No"])
+
+                st.markdown("### Role Selection")
                 role = st.selectbox(
                     "Expertise",
                     options=list(TECH_ROLES.keys()),
@@ -287,7 +307,11 @@ def collect_candidate_info():
                     "name": st.session_state.candidate_name,
                     "role": role,
                     "id": st.session_state.candidate_id,
-                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "ctc_range": ctc_range,
+                    "preferred_location": preferred_location,
+                    "willing_to_relocate": willing_to_relocate,
+                    "cv_analysis": st.session_state.cv_analysis  # Include full CV analysis
                 }
                 st.session_state.profile_completed = True
                 st.session_state.page = 'interview'
@@ -390,6 +414,9 @@ def show_results_page():
     **Name:** {st.session_state.candidate_info['name']}
     **Role:** {st.session_state.candidate_info['role']}
     **Date:** {st.session_state.candidate_info['datetime']}
+    **CTC Range:** {st.session_state.candidate_info['ctc_range']}
+    **Preferred Location:** {st.session_state.candidate_info['preferred_location']}
+    **Willing to Relocate:** {st.session_state.candidate_info['willing_to_relocate']}
     """)
 
     # Generate and display analytics
