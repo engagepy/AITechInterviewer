@@ -27,30 +27,25 @@ with open(".streamlit/style.css") as f:
 
 def initialize_session_state():
     """Initialize all session state variables"""
-    if 'current_question' not in st.session_state:
-        st.session_state.current_question = 0
-    if 'questions' not in st.session_state:
-        st.session_state.questions = []
-    if 'answers' not in st.session_state:
-        st.session_state.answers = []
-    if 'times' not in st.session_state:
-        st.session_state.times = []
-    if 'notes' not in st.session_state:
-        st.session_state.notes = []
-    if 'start_time' not in st.session_state:
-        st.session_state.start_time = None
-    if 'quiz_completed' not in st.session_state:
-        st.session_state.quiz_completed = False
-    if 'candidate_id' not in st.session_state:
-        st.session_state.candidate_id = str(uuid.uuid4())[:8].upper()
-    if 'profile_completed' not in st.session_state:
-        st.session_state.profile_completed = False
-    if 'candidate_info' not in st.session_state:
-        st.session_state.candidate_info = {}
-    if 'cv_uploaded' not in st.session_state:
-        st.session_state.cv_uploaded = False
-    if 'suggested_role' not in st.session_state:
-        st.session_state.suggested_role = None
+    defaults = {
+        'current_question': 0,
+        'questions': [],
+        'answers': [],
+        'times': [],
+        'notes': [],
+        'start_time': None,
+        'quiz_completed': False,
+        'candidate_id': str(uuid.uuid4())[:8].upper(),
+        'profile_completed': False,
+        'candidate_info': {},
+        'cv_uploaded': False,
+        'suggested_role': None,
+        'page': 'welcome'  # New state variable to track current page
+    }
+
+    for key, value in defaults.items():
+        if key not in st.session_state:
+            st.session_state[key] = value
 
 def reset_session():
     """Reset all session state variables"""
@@ -58,6 +53,7 @@ def reset_session():
         del st.session_state[key]
     initialize_session_state()
 
+# Tech roles configuration
 TECH_ROLES = {
     "Frontend Developer": {
         "languages": ["JavaScript", "TypeScript"],
@@ -141,44 +137,50 @@ def show_welcome_page():
     Let's get started with your technical assessment!
     """)
 
-    if st.button("Begin Assessment", key="begin_assessment"):
-        st.session_state.profile_completed = False
+    if st.button("Begin Assessment"):
+        st.session_state.page = 'profile'
         st.experimental_rerun()
 
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
 
-    col1, col2 = st.columns(2)
+    # Create a form for better submission handling
+    with st.form("candidate_profile_form"):
+        col1, col2 = st.columns(2)
 
-    with col1:
-        name = st.text_input("Full Name")
-        age = st.number_input("Age", min_value=18, max_value=100, value=25)
+        with col1:
+            name = st.text_input("Full Name", key="form_name")
+            age = st.number_input("Age", min_value=18, max_value=100, value=25, key="form_age")
 
-        # CV Upload
-        uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
-        if uploaded_file is not None and not st.session_state.cv_uploaded:
-            cv_content = extract_text_from_pdf(uploaded_file.getvalue())
-            if cv_content:
-                with st.spinner("Analyzing your CV..."):
-                    analysis = analyze_cv(cv_content)
-                    if analysis:
-                        st.session_state.suggested_role = analysis["suggested_role"]
-                        st.session_state.cv_uploaded = True
-                        st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
-                        st.info(f"Reasoning: {analysis['reasoning']}")
+            # CV Upload
+            uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
 
-    with col2:
-        role = st.selectbox(
-            "Position Applied For",
-            options=list(TECH_ROLES.keys()),
-            index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
-        )
-        if st.session_state.suggested_role and role != st.session_state.suggested_role:
-            st.info("Note: You've selected a different role than suggested based on your CV.")
+        with col2:
+            role = st.selectbox(
+                "Position Applied For",
+                options=list(TECH_ROLES.keys()),
+                index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0,
+                key="form_role"
+            )
 
-    # Form submission handling
-    if name and age and role:
-        if st.button("Start Technical Interview"):
+            if st.session_state.suggested_role and role != st.session_state.suggested_role:
+                st.info("Note: You've selected a different role than suggested based on your CV.")
+
+        # Submit button must be the last element in the form
+        submitted = st.form_submit_button("Start Technical Interview")
+
+        if submitted and name and age and role:
+            if uploaded_file is not None and not st.session_state.cv_uploaded:
+                cv_content = extract_text_from_pdf(uploaded_file.getvalue())
+                if cv_content:
+                    with st.spinner("Analyzing your CV..."):
+                        analysis = analyze_cv(cv_content)
+                        if analysis:
+                            st.session_state.suggested_role = analysis["suggested_role"]
+                            st.session_state.cv_uploaded = True
+                            st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
+                            st.info(f"Reasoning: {analysis['reasoning']}")
+
             st.session_state.candidate_info = {
                 "name": name,
                 "age": age,
@@ -187,6 +189,7 @@ def collect_candidate_info():
                 "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
             st.session_state.profile_completed = True
+            st.session_state.page = 'interview'
             st.experimental_rerun()
 
 def show_interview_page():
@@ -195,22 +198,23 @@ def show_interview_page():
     if not st.session_state.questions:
         st.title("🎯 Technical Assessment Configuration")
 
-        col1, col2 = st.columns(2)
-        with col1:
-            language = st.selectbox(
-                "Select Programming Language",
-                options=role_info["languages"]
-            )
+        with st.form("interview_config_form"):
+            col1, col2 = st.columns(2)
+            with col1:
+                language = st.selectbox(
+                    "Select Programming Language",
+                    options=role_info["languages"]
+                )
 
-        difficulty = role_info["difficulty"]
-        with col2:
-            st.info(f"Difficulty Level: {difficulty}")
+            difficulty = role_info["difficulty"]
+            with col2:
+                st.info(f"Difficulty Level: {difficulty}")
 
-        if st.button("Begin Interview"):
-            with st.spinner("Preparing your technical assessment..."):
-                st.session_state.questions = generate_questions(language, difficulty)
-            st.session_state.start_time = time.time()
-            st.experimental_rerun()
+            if st.form_submit_button("Begin Interview"):
+                with st.spinner("Preparing your technical assessment..."):
+                    st.session_state.questions = generate_questions(language, difficulty)
+                st.session_state.start_time = time.time()
+                st.experimental_rerun()
 
     else:
         # Progress bar
@@ -222,33 +226,30 @@ def show_interview_page():
 
         st.subheader(f"Question {st.session_state.current_question + 1}/10")
 
-        with st.container():
+        with st.form(f"question_form_{st.session_state.current_question}"):
             st.write(question["question"])
 
             selected_option = st.radio(
                 "Select your answer:",
-                question["options"],
-                key=f"q_{st.session_state.current_question}"
+                question["options"]
             )
 
             notes = st.text_area(
-                "Additional notes (optional):",
-                key=f"notes_{st.session_state.current_question}"
+                "Additional notes (optional):"
             )
 
-            col1, col2, col3 = st.columns([2,1,1])
-            with col2:
-                if st.button("Next Question" if st.session_state.current_question < 9 else "Finish Interview"):
-                    st.session_state.answers.append(selected_option)
-                    st.session_state.times.append(time.time() - st.session_state.start_time)
-                    st.session_state.notes.append(notes)
-                    st.session_state.start_time = time.time()
+            if st.form_submit_button("Next Question" if st.session_state.current_question < 9 else "Finish Interview"):
+                st.session_state.answers.append(selected_option)
+                st.session_state.times.append(time.time() - st.session_state.start_time)
+                st.session_state.notes.append(notes)
+                st.session_state.start_time = time.time()
 
-                    if st.session_state.current_question < 9:
-                        st.session_state.current_question += 1
-                    else:
-                        st.session_state.quiz_completed = True
-                    st.experimental_rerun()
+                if st.session_state.current_question < 9:
+                    st.session_state.current_question += 1
+                else:
+                    st.session_state.quiz_completed = True
+                    st.session_state.page = 'results'
+                st.experimental_rerun()
 
 def show_results_page():
     st.title("📊 Assessment Results")
@@ -271,27 +272,21 @@ def show_results_page():
         st.session_state.candidate_info
     )
 
-    col1, col2 = st.columns([1,1])
-    with col1:
-        if st.button("Start New Interview"):
-            reset_session()
-            st.experimental_rerun()
+    if st.button("Start New Interview"):
+        reset_session()
+        st.experimental_rerun()
 
 def main():
     initialize_session_state()
 
-    if not st.session_state.profile_completed:
-        if 'quiz_completed' in st.session_state and st.session_state.quiz_completed:
-            reset_session()
-            show_welcome_page()
-        else:
-            if 'begin_assessment' not in st.session_state:
-                show_welcome_page()
-            else:
-                collect_candidate_info()
-    elif not st.session_state.quiz_completed:
+    # Page routing based on session state
+    if st.session_state.page == 'welcome':
+        show_welcome_page()
+    elif st.session_state.page == 'profile':
+        collect_candidate_info()
+    elif st.session_state.page == 'interview':
         show_interview_page()
-    else:
+    elif st.session_state.page == 'results':
         show_results_page()
 
 if __name__ == "__main__":
