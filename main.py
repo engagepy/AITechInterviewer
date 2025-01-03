@@ -312,6 +312,14 @@ def collect_candidate_info():
             💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
             """)
 
+            # Re-show verification animations if they exist in session state
+            if hasattr(st.session_state, 'animation_container'):
+                with st.session_state.animation_container.container():
+                    st.success("✅ LinkedIn API Verification (Success)")
+                    st.success("✅ Github Profile Analysis (Success)")
+                    st.success("✅ Past Experience Verification Emails (Sent)")
+                    st.success("✅ Culture Alignment (Verified)")
+
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
