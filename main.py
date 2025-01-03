@@ -305,6 +305,8 @@ def collect_candidate_info():
         # Only show the form after CV analysis
         if st.session_state.cv_uploaded:
             with st.form("candidate_profile_form"):
+                col1, col2 = st.columns(2)
+
                 with col2:
                     st.markdown("### Additional Information")
 
