@@ -377,6 +377,8 @@ def collect_candidate_info():
 
                 if st.session_state.suggested_role and role != st.session_state.suggested_role:
                     st.info("Note: You've selected a different expertise than suggested based on your CV.")
+                else:
+                    st.markdown("<div class='ai-badge'>🤖 AI Recommended Role</div>", unsafe_allow_html=True)
 
             # Submit button inside the form
             submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
@@ -436,9 +438,9 @@ def show_interview_page():
             difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"])
             with col2:
                 st.info(f"Difficulty Level: {difficulty}")
-                # Show AI recommendation badge if role matches suggested role
-                if st.session_state.candidate_info["role"] == st.session_state.suggested_role:
-                    st.markdown("<div class='ai-badge'>🤖 AI Recommended Role</div>", unsafe_allow_html=True)
+                # Show AI recommendation badge if using suggested difficulty
+                if 'suggested_difficulty' in st.session_state and difficulty == st.session_state.suggested_difficulty:
+                    st.markdown("<div class='ai-badge'>🤖 AI Recommended</div>", unsafe_allow_html=True)
 
             if st.form_submit_button("Begin Interview"):
                 with st.spinner("Generating questions..."):
