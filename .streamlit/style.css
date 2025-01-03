@@ -39,6 +39,21 @@ h1 img, h1 svg, h1 .emoji {
     color: currentColor !important;
 }
 
+/* Additional override for specific emoji */
+h1 .element-container:first-child {
+    color: inherit !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+
+h1 .element-container:first-child .emoji {
+    background: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+
 .subtitle {
     font-size: 1.2rem;
     color: white;
