@@ -259,7 +259,6 @@ def collect_candidate_info():
                             # Show verifications first
                             show_verification_animations()
 
-                            # Then show analysis results
                             st.markdown(f"""
                             ### Analysis Results
                             👤 **Candidate:** {analysis['candidate_name']}
@@ -306,7 +305,6 @@ def collect_candidate_info():
                 # Show verifications first
                 show_verification_animations()
 
-                # Then show analysis results
                 st.markdown(f"""
                 ### Analysis Results
                 👤 **Candidate:** {analysis['candidate_name']}
