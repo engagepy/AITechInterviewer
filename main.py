@@ -39,6 +39,7 @@ def initialize_session_state():
         'profile_completed': False,
         'candidate_info': {},
         'cv_uploaded': False,
+        'verification_shown': False,  # Track if verification animation has been shown
         'suggested_role': None,
         'page': 'welcome'  # New state variable to track current page
     }
@@ -484,6 +485,15 @@ def show_results_page():
 
 def show_verification_animations():
     """Show verification animations sequentially"""
+    # If verifications have already been shown, display static badges
+    if st.session_state.verification_shown:
+        st.success("✅ LinkedIn API Verification (Success)")
+        st.success("✅ Github Profile Analysis (Success)")
+        st.success("✅ Past Experience Verification Emails (Sent)")
+        st.success("✅ Culture Alignment (Verified)")
+        return
+
+    # Show animated sequence only on first display
     with st.spinner("Processing verifications..."):
         # LinkedIn API Verification
         time.sleep(1)
@@ -502,6 +512,9 @@ def show_verification_animations():
         st.success("✅ Culture Alignment (Verified)")
 
         time.sleep(0.5)
+
+    # Mark verifications as shown
+    st.session_state.verification_shown = True
 
 
 def main():
