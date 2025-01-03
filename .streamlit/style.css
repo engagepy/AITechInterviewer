@@ -54,21 +54,33 @@ h1 .element-container:first-child .emoji {
     -webkit-text-fill-color: currentColor !important;
 }
 
-/* Ensure no gradient on emoji */
+/* Reset gradient for the first child (emoji container) */
 h1 > div:first-child {
     background: none !important;
     -webkit-background-clip: unset !important;
     background-clip: unset !important;
-    -webkit-text-fill-color: currentColor !important;
     color: white !important;
+    -webkit-text-fill-color: white !important;
+    -webkit-background-clip: unset !important;
+    background-image: none !important;
 }
 
-h1 > div:first-child .emoji {
+/* Ensure emoji itself is not affected by gradient */
+h1 > div:first-child * {
     background: none !important;
     -webkit-background-clip: unset !important;
     background-clip: unset !important;
+    color: currentColor !important;
     -webkit-text-fill-color: currentColor !important;
-    color: white !important;
+    background-image: none !important;
+}
+
+/* Apply gradient only to the text container */
+h1 > div:not(:first-child) {
+    background: linear-gradient(45deg, #1a73e8, #34a853) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    color: transparent !important;
 }
 
 .subtitle {
@@ -99,7 +111,6 @@ h1 > div:first-child .emoji {
     100% { width: 0; right: 0; left: auto; }
 }
 
-/* Features grid */
 .features-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
@@ -107,7 +118,6 @@ h1 > div:first-child .emoji {
     margin: 3rem 0;
 }
 
-/* Feature cards */
 .feature-card {
     background: var(--card-bg);
     border-radius: 12px;
@@ -154,7 +164,6 @@ h1 > div:first-child .emoji {
     line-height: 1.6;
 }
 
-/* Button styling */
 .stButton > button {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     color: white !important;
@@ -174,12 +183,10 @@ h1 > div:first-child .emoji {
     box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
 }
 
-/* Hide Streamlit branding */
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
 
-/* Fix heading styles */
 h2, h3, h4, h5, h6 {
     color: white !important;
     font-weight: 600 !important;
@@ -188,7 +195,6 @@ h2, h3, h4, h5, h6 {
     background: none !important;
 }
 
-/* Streamlit specific overrides */
 .css-10trblm {
     color: white !important;
     text-shadow: none !important;
@@ -199,12 +205,10 @@ h2, h3, h4, h5, h6 {
     color: white !important;
 }
 
-/* Ensure text is visible on dark background */
 p, li, label {
     color: white !important;
 }
 
-/* Override for feature cards text */
 .feature-card * {
     color: var(--text-color) !important;
 }
@@ -214,7 +218,6 @@ p, li, label {
     margin-bottom: 1rem;
 }
 
-/* Roles section styling */
 .roles-section {
     background: var(--card-bg);
     border-radius: 12px;
@@ -253,7 +256,6 @@ p, li, label {
     left: 0;
 }
 
-/* AI Recommendation Badge */
 .ai-badge {
     display: inline-block;
     padding: 4px 8px;
@@ -266,7 +268,6 @@ p, li, label {
     animation: glow 2s ease-in-out infinite;
 }
 
-/* Mini AI badge for feature cards */
 .mini-ai-badge {
     position: absolute;
     top: 10px;
