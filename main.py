@@ -40,8 +40,7 @@ def initialize_session_state():
         'candidate_info': {},
         'cv_uploaded': False,
         'suggested_role': None,
-        'page': 'welcome',  # New state variable to track current page
-        'verifications_shown': False  # Track if verifications have been shown
+        'page': 'welcome'  # New state variable to track current page
     }
 
     for key, value in defaults.items():
@@ -277,6 +276,28 @@ def collect_candidate_info():
                             💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                             """)
 
+                        # Parse years of experience from detailed analysis
+                        try:
+                            exp_details = analysis.get('experience_details', {})
+                            exp_str = analysis['years_of_experience'].lower().split()[0]
+
+                            if '-' in exp_str:
+                                low, high = map(float, exp_str.split('-'))
+                                years = (low + high) / 2
+                            else:
+                                years = float(exp_str)
+
+                            if years < 1:
+                                difficulty = "Easy"
+                            elif years < 3:
+                                difficulty = "Medium"
+                            else:
+                                difficulty = "Hard"
+                            st.session_state.suggested_difficulty = difficulty
+                        except (ValueError, IndexError):
+                            st.session_state.suggested_difficulty = "Medium"
+                            st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
+
         # Show the analysis results even after CV is uploaded
         elif st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
             analysis = st.session_state.cv_analysis
@@ -302,73 +323,52 @@ def collect_candidate_info():
                 💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                 """)
 
-        # Only show the form after CV analysis
-        if st.session_state.cv_uploaded:
-            with st.form("candidate_profile_form"):
-                col1, col2 = st.columns(2)
+    # Only show the form after CV analysis
+    if st.session_state.cv_uploaded:
+        with st.form("candidate_profile_form"):
+            with col2:
+                st.markdown("### Additional Information")
 
-                with col2:
-                    st.markdown("### Additional Information")
+                # CTC Range dropdown
+                ctc_ranges = [
+                    "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
+                    "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
+                ]
+                ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
 
-                    # CTC Range dropdown
-                    ctc_ranges = [
-                        "Select CTC Range",
-                        "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
-                        "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
-                    ]
-                    ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
+                # Location preferences
+                preferred_location = st.text_input("Preferred Location")
+                willing_to_relocate = st.selectbox("Willing to Relocate", options=["Yes", "No"])
 
-                    # Location preferences
-                    preferred_location = st.text_input("Preferred Location")
-                    willing_to_relocate = st.selectbox("Willing to Relocate", options=["Select Option", "Yes", "No"])
+                st.markdown("### Role Selection")
+                role = st.selectbox(
+                    "Expertise",
+                    options=list(TECH_ROLES.keys()),
+                    index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
+                )
 
-                    st.markdown("### Role Selection")
-                    role = st.selectbox(
-                        "Expertise",
-                        options=["Select Role"] + list(TECH_ROLES.keys()),
-                        index=list(["Select Role"] + list(TECH_ROLES.keys())).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
-                    )
+                if st.session_state.suggested_role and role != st.session_state.suggested_role:
+                    st.info("Note: You've selected a different expertise than suggested based on your CV.")
 
-                    if st.session_state.suggested_role and role != "Select Role":
-                        if role == st.session_state.suggested_role:
-                            st.success("✨ AI Recommended Role")
-                        else:
-                            st.info("Note: You've selected a different expertise than suggested based on your CV.")
+            # Submit button inside the form
+            submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
 
-                    # Form validation
-                    form_complete = (
-                        ctc_range != "Select CTC Range" and
-                        preferred_location.strip() != "" and
-                        willing_to_relocate != "Select Option" and
-                        role != "Select Role"
-                    )
-
-                    # Submit button with conditional enable/disable
-                    submitted = st.form_submit_button(
-                        "Start Technical Interview",
-                        disabled=not form_complete,
-                        use_container_width=True
-                    )
-
-                    if not form_complete and submitted:
-                        st.error("Please fill in all fields to proceed")
-
-                    if submitted and form_complete:
-                        st.session_state.candidate_info = {
-                            "name": st.session_state.candidate_name,
-                            "role": role,
-                            "id": st.session_state.candidate_id,
-                            "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                            "ctc_range": ctc_range,
-                            "preferred_location": preferred_location,
-                            "willing_to_relocate": willing_to_relocate,
-                            "cv_analysis": st.session_state.cv_analysis
-                        }
-                        st.session_state.profile_completed = True
-                        st.session_state.page = 'interview'
-                        st.rerun()
-        else:
-            st.info("👆 Please upload your CV to proceed with the assessment")
+            if submitted and role:
+                st.session_state.candidate_info = {
+                    "name": st.session_state.candidate_name,
+                    "role": role,
+                    "id": st.session_state.candidate_id,
+                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                    "ctc_range": ctc_range,
+                    "preferred_location": preferred_location,
+                    "willing_to_relocate": willing_to_relocate,
+                    "cv_analysis": st.session_state.cv_analysis  # Include full CV analysis
+                }
+                st.session_state.profile_completed = True
+                st.session_state.page = 'interview'
+                st.rerun()
+    else:
+        st.info("👆 Please upload your CV to proceed with the assessment")
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
@@ -486,26 +486,25 @@ def show_results_page():
 
 def show_verification_animations():
     """Show verification animations sequentially"""
-    if not st.session_state.verifications_shown:
-        with st.spinner("Processing verifications..."):
-            # LinkedIn API Verification
-            time.sleep(1)
-            st.success("✅ LinkedIn API Verification (Success)")
+    with st.spinner("Processing verifications..."):
+        # LinkedIn API Verification
+        time.sleep(1)
+        st.success("✅ LinkedIn API Verification (Success)")
 
-            # Github Profile Analysis
-            time.sleep(0.8)
-            st.success("✅ Github Profile Analysis (Success)")
+        # Github Profile Analysis
+        time.sleep(0.8)
+        st.success("✅ Github Profile Analysis (Success)")
 
-            # Past Experience Verification
-            time.sleep(1.2)
-            st.success("✅ Past Experience Verification Emails (Sent)")
+        # Past Experience Verification
+        time.sleep(1.2)
+        st.success("✅ Past Experience Verification Emails (Sent)")
 
-            # Culture Alignment
-            time.sleep(0.7)
-            st.success("✅ Culture Alignment (Verified)")
+        # Culture Alignment
+        time.sleep(0.7)
+        st.success("✅ Culture Alignment (Verified)")
 
-            time.sleep(0.5)
-            st.session_state.verifications_shown = True
+        time.sleep(0.5)
+
 
 def main():
     initialize_session_state()
