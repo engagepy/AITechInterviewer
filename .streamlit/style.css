@@ -24,34 +24,6 @@ h1 {
     margin-bottom: 1rem !important;
     font-weight: 700 !important;
     text-shadow: none !important;
-    background: linear-gradient(45deg, #1a73e8, #34a853) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-    color: transparent !important;
-
-}
-
-/* Override for vectors and emojis within headings */
-h1 img, h1 svg, h1 .emoji {
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    background-clip: unset !important;
-    color: currentColor !important;
-}
-
-/* Additional override for specific emoji */
-h1 .element-container:first-child {
-    color: inherit !important;
-    background: none !important;
-    -webkit-background-clip: unset !important;
-    background-clip: unset !important;
-    -webkit-text-fill-color: currentColor !important;
-}
-
-h1 .element-container:first-child .emoji {
-    background: none !important;
-    color: inherit !important;
-    -webkit-text-fill-color: currentColor !important;
 }
 
 /* Reset gradient for the first child (emoji container) */
@@ -82,6 +54,30 @@ h1 > div:not(:first-child) {
     background-clip: text !important;
     color: transparent !important;
 }
+
+/* Override for vectors and emojis within headings */
+h1 img, h1 svg, h1 .emoji {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    color: currentColor !important;
+}
+
+/* Additional override for specific emoji */
+h1 .element-container:first-child {
+    color: inherit !important;
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+
+h1 .element-container:first-child .emoji {
+    background: none !important;
+    color: inherit !important;
+    -webkit-text-fill-color: currentColor !important;
+}
+
 
 .subtitle {
     font-size: 1.2rem;
