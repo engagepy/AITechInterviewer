@@ -82,6 +82,7 @@ def create_pdf_report(analytics_data, figures):
     story.append(Paragraph(f"Name: {analytics_data['candidate_info']['name']}", styles['Normal']))
     story.append(Paragraph(f"ID: {analytics_data['candidate_info']['id']}", styles['Normal']))
     story.append(Paragraph(f"Role: {analytics_data['candidate_info']['role']}", styles['Normal']))
+    story.append(Paragraph(f"Tool: {analytics_data['candidate_info']['tool']}", styles['Normal']))
 
     # Additional Candidate Information
     story.append(Paragraph(f"Expected CTC: {analytics_data['candidate_info']['ctc_range']}", styles['Normal']))
@@ -286,3 +287,19 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
         file_name=f"interview_report_{candidate_info['id']}_{ny_now.strftime('%Y%m%d_%H%M%S')}.pdf",
         mime="application/pdf"
     )
+
+def show_results_page():
+    st.title("📊 Assessment Results")
+
+    # Display candidate information
+    st.sidebar.success(f"""
+    ### Candidate Information
+    **ID:** {st.session_state.candidate_info['id']}
+    **Name:** {st.session_state.candidate_info['name']}
+    **Role:** {st.session_state.candidate_info['role']}
+    **Tool:** {st.session_state.candidate_info['tool']}
+    **Date:** {st.session_state.candidate_info['datetime']}
+    **CTC Range:** {st.session_state.candidate_info['ctc_range']}
+    **Preferred Location:** {st.session_state.candidate_info['preferred_location']}
+    **Willing to Relocate:** {st.session_state.candidate_info['willing_to_relocate']}
+    """)
