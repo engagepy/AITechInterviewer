@@ -254,26 +254,26 @@ def collect_candidate_info():
                             st.session_state.suggested_difficulty = "Medium"
                             st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
-                        # Display analysis results
-                        st.success("✅ CV Analysis Complete!")
-                        st.markdown(f"""
-                        ### Analysis Results
-                        👤 **Candidate:** {analysis['candidate_name']}
-
-                        📋 **Suggested Role:** {analysis['suggested_role']}
-
-                        🎓 **Education:** {analysis.get('education', 'Not specified')}
-
-                        ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
-
-                        ⏳ **Experience:** {analysis['years_of_experience']}
-
-                        💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
-                        """)
-
-
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
+        # Display CV Analysis outside the form
+        st.success("✅ CV Analysis Complete!")
+        st.markdown(f"""
+        ### Analysis Results
+        👤 **Candidate:** {st.session_state.candidate_name}
+
+        📋 **Suggested Role:** {analysis['suggested_role']}
+
+        🎓 **Education:** {analysis.get('education', 'Not specified')}
+
+        ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
+
+        ⏳ **Experience:** {analysis['years_of_experience']}
+
+        💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
+        """)
+
+        # Create the form for additional information
         with st.form("candidate_profile_form"):
             with col2:
                 st.markdown("### Additional Information")
@@ -283,11 +283,11 @@ def collect_candidate_info():
                     "10-15 LPA", "15-20 LPA", "20-25 LPA", "25-30 LPA",
                     "30-40 LPA", "40-50 LPA", "50-75 LPA", "75-100 LPA", "Above 1 Cr"
                 ]
-                ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges)
+                ctc_range = st.selectbox("Expected CTC Range", options=ctc_ranges, key="ctc_range")
 
                 # Location preferences
-                preferred_location = st.text_input("Preferred Location")
-                willing_to_relocate = st.selectbox("Willing to Relocate", options=["Yes", "No"])
+                preferred_location = st.text_input("Preferred Location", key="preferred_location")
+                willing_to_relocate = st.selectbox("Willing to Relocate", options=["Yes", "No"], key="willing_to_relocate")
 
                 st.markdown("### Role Selection")
                 role = st.selectbox(
@@ -299,23 +299,38 @@ def collect_candidate_info():
                 if st.session_state.suggested_role and role != st.session_state.suggested_role:
                     st.info("Note: You've selected a different expertise than suggested based on your CV.")
 
-            # Submit button inside the form
-            submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
+                # Check if all fields are filled
+                all_fields_filled = bool(ctc_range and preferred_location and willing_to_relocate and role)
 
-            if submitted and role:
-                st.session_state.candidate_info = {
-                    "name": st.session_state.candidate_name,
-                    "role": role,
-                    "id": st.session_state.candidate_id,
-                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
-                    "ctc_range": ctc_range,
-                    "preferred_location": preferred_location,
-                    "willing_to_relocate": willing_to_relocate,
-                    "cv_analysis": st.session_state.cv_analysis  # Include full CV analysis
-                }
-                st.session_state.profile_completed = True
-                st.session_state.page = 'interview'
-                st.rerun()
+                # Submit button with dynamic styling
+                if all_fields_filled:
+                    submit_button = st.form_submit_button(
+                        "Start Technical Interview",
+                        use_container_width=True,
+                        type="primary"  # Makes the button blue when enabled
+                    )
+                else:
+                    st.info("Please fill all fields to proceed")
+                    submit_button = st.form_submit_button(
+                        "Start Technical Interview",
+                        use_container_width=True,
+                        disabled=True
+                    )
+
+                if submit_button and all_fields_filled:
+                    st.session_state.candidate_info = {
+                        "name": st.session_state.candidate_name,
+                        "role": role,
+                        "id": st.session_state.candidate_id,
+                        "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+                        "ctc_range": ctc_range,
+                        "preferred_location": preferred_location,
+                        "willing_to_relocate": willing_to_relocate,
+                        "cv_analysis": st.session_state.cv_analysis  # Include full CV analysis
+                    }
+                    st.session_state.profile_completed = True
+                    st.session_state.page = 'interview'
+                    st.rerun()
     else:
         st.info("👆 Please upload your CV to proceed with the assessment")
 
