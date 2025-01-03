@@ -19,10 +19,13 @@ def generate_questions(language, difficulty):
     Questions should test both theoretical knowledge and practical programming concepts."""
 
     try:
-        st.write("🤖 AI is generating questions tailored to your profile...")
+        st.write("🤖 Connecting to AI service...")
         progress_bar = st.progress(0)
 
         # Create the API request with a timeout
+        progress_bar.progress(25)
+        st.write("⚡ Generating questions...")
+
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
@@ -33,8 +36,8 @@ def generate_questions(language, difficulty):
             timeout=30  # 30 seconds timeout
         )
 
-        progress_bar.progress(50)
-        st.write("✨ Processing questions...")
+        progress_bar.progress(75)
+        st.write("✨ Processing response...")
 
         # Parse the response
         questions = json.loads(response.choices[0].message.content)["questions"]
