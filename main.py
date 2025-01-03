@@ -73,29 +73,54 @@ TECH_ROLES = {
         "keywords": ["fullstack", "full-stack", "frontend", "backend", "web"]
     },
     "DevOps Engineer": {
-        "languages": ["Python", "Go", "Shell", "Ruby", "JavaScript"],
+        "languages": ["Terraform", "Kubernetes", "Docker", "Jenkins", "Ansible"],
         "difficulty": "Medium",
         "keywords": ["devops", "ci/cd", "aws", "docker", "kubernetes", "infrastructure"]
     },
     "Mobile Developer": {
-        "languages": ["Java", "Swift", "Kotlin", "React Native", "Flutter"],
+        "languages": ["Swift", "Kotlin", "React Native", "Flutter", "Android Studio"],
         "difficulty": "Medium",
         "keywords": ["mobile", "android", "ios", "react native", "flutter"]
     },
     "Product Manager": {
-        "languages": ["Agile", "Scrum", "Kanban", "Product Strategy", "User Stories"],
+        "languages": ["JIRA", "Confluence", "Product Vision", "Roadmap", "User Stories"],
         "difficulty": "Medium",
         "keywords": ["product", "agile", "scrum", "jira", "miro", "roadmap", "user stories", "backlog"]
     },
     "Salesforce Developer": {
-        "languages": ["Apex", "Lightning Web Components", "Visualforce", "SOQL", "JavaScript"],
+        "languages": ["Apex", "Lightning Web Components", "Visualforce", "SOQL", "Flow Builder"],
         "difficulty": "Medium",
         "keywords": ["salesforce", "apex", "lwc", "visualforce", "soql", "crm"]
     },
     "AWS Cloud Engineer": {
-        "languages": ["Python", "Shell", "CloudFormation", "Terraform", "AWS CLI"],
+        "languages": ["AWS CLI", "CloudFormation", "Lambda", "EC2", "S3"],
         "difficulty": "Hard",
-        "keywords": ["aws", "cloud", "ec2", "s3", "lambda", "cloudformation", "terraform"]
+        "keywords": ["aws", "cloud", "ec2", "s3", "lambda", "cloudformation"]
+    },
+    "Azure Developer": {
+        "languages": ["Azure CLI", "ARM Templates", "Azure Functions", "Azure DevOps", "Power Platform"],
+        "difficulty": "Hard",
+        "keywords": ["azure", "cloud", "functions", "devops", "power apps"]
+    },
+    "Google Cloud Expert": {
+        "languages": ["Google Cloud SDK", "Cloud Functions", "BigQuery", "Kubernetes Engine", "App Engine"],
+        "difficulty": "Hard",
+        "keywords": ["gcp", "google cloud", "bigquery", "kubernetes", "app engine"]
+    },
+    "Data Scientist": {
+        "languages": ["Python", "R", "TensorFlow", "PyTorch", "Scikit-learn"],
+        "difficulty": "Hard",
+        "keywords": ["data science", "machine learning", "ai", "statistics", "deep learning"]
+    },
+    "Business Analyst": {
+        "languages": ["SQL", "Excel", "Tableau", "Power BI", "BPMN"],
+        "difficulty": "Medium",
+        "keywords": ["business analysis", "requirements", "process modeling", "data analysis"]
+    },
+    "QA Engineer": {
+        "languages": ["Selenium", "Cypress", "JUnit", "TestNG", "Postman"],
+        "difficulty": "Medium",
+        "keywords": ["testing", "automation", "quality assurance", "test cases"]
     }
 }
 
@@ -225,6 +250,11 @@ def show_welcome_page():
             <li>Product Managers</li>
             <li>Salesforce Developers</li>
             <li>Mobile Developers</li>
+            <li>Azure Developers</li>
+            <li>Google Cloud Experts</li>
+            <li>Data Scientists</li>
+            <li>Business Analysts</li>
+            <li>QA Engineers</li>
         </ul>
     </div>
     """, unsafe_allow_html=True)
@@ -377,45 +407,45 @@ def show_interview_page():
         with st.form("interview_config_form"):
             col1, col2 = st.columns(2)
             with col1:
-                # Get available languages for the role
-                available_languages = role_info["languages"]
+                # Get available tools for the role
+                available_tools = role_info["languages"]
 
-                # Get recommended languages from CV analysis
-                recommended_languages = st.session_state.get('recommended_languages', [])
+                # Get recommended tools from CV analysis
+                recommended_tools = st.session_state.get('recommended_languages', [])
 
-                # Find the default language (first recommended language that's available for the role)
+                # Find the default tool (first recommended tool that's available for the role)
                 default_index = 0
-                if recommended_languages:
-                    for i, lang in enumerate(available_languages):
-                        if lang in recommended_languages:
+                if recommended_tools:
+                    for i, tool in enumerate(available_tools):
+                        if tool in recommended_tools:
                             default_index = i
                             break
 
-                language = st.selectbox(
-                    "Select Programming Language",
-                    options=available_languages,
+                tool = st.selectbox(
+                    "Select Tool",
+                    options=available_tools,
                     index=default_index,
-                    help="Languages are suggested based on your CV and role requirements"
+                    help="Tools are suggested based on your CV and role requirements"
                 )
 
-                # Show recommendation indicator if the selected language is recommended
-                if language in recommended_languages:
-                    st.success("✨ This language is recommended based on your experience")
+                # Show recommendation indicator if the selected tool is recommended
+                if tool in recommended_tools:
+                    st.success("✨ This tool is recommended based on your experience")
 
-            difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"]) #Use suggested difficulty if available
+            difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"])
             with col2:
                 st.info(f"Difficulty Level: {difficulty}")
 
             if st.form_submit_button("Begin Interview"):
                 with st.spinner("Generating questions..."):
-                    questions = generate_questions(language, difficulty)
-                    if questions:  # Only proceed if questions were generated successfully
+                    questions = generate_questions(tool, difficulty)
+                    if questions:
                         st.session_state.questions = questions
                         st.session_state.start_time = time.time()
                         st.rerun()
                     else:
                         st.error("Failed to generate questions. Please try again.")
-                        time.sleep(2)  # Give user time to read the error
+                        time.sleep(2)
                         st.rerun()
 
     else:
