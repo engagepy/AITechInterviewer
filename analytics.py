@@ -8,14 +8,22 @@ import json
 import base64
 from datetime import datetime
 import io
+import pytz
 from reportlab.lib import colors
 from reportlab.lib.pagesizes import letter
-from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, Image
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
-
 
 # Initialize OpenAI client
 openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
+
+# Set timezone to US/New York
+ny_timezone = pytz.timezone('America/New_York')
+
+def fig_to_img(fig, width=500):
+    """Convert plotly figure to reportlab Image"""
+    img_bytes = fig.to_image(format="png", width=width)
+    return Image(io.BytesIO(img_bytes), width=width, height=width * 0.6)
 
 def calculate_score(questions, answers):
     correct = 0
@@ -47,7 +55,7 @@ def analyze_notes(notes, role):
     except:
         return None
 
-def create_pdf_report(analytics_data):
+def create_pdf_report(analytics_data, figures):
     buffer = io.BytesIO()
     doc = SimpleDocTemplate(buffer, pagesize=letter)
     styles = getSampleStyleSheet()
@@ -68,7 +76,11 @@ def create_pdf_report(analytics_data):
     story.append(Paragraph(f"Name: {analytics_data['candidate_info']['name']}", styles['Normal']))
     story.append(Paragraph(f"ID: {analytics_data['candidate_info']['id']}", styles['Normal']))
     story.append(Paragraph(f"Role: {analytics_data['candidate_info']['role']}", styles['Normal']))
-    story.append(Paragraph(f"Date: {analytics_data['candidate_info']['datetime']}", styles['Normal']))
+
+    # Convert timestamp to NY timezone
+    date_obj = datetime.strptime(analytics_data['candidate_info']['datetime'], "%Y-%m-%d %H:%M:%S")
+    ny_time = pytz.utc.localize(date_obj).astimezone(ny_timezone)
+    story.append(Paragraph(f"Date: {ny_time.strftime('%Y-%m-%d %I:%M:%S %p %Z')}", styles['Normal']))
     story.append(Spacer(1, 20))
 
     # Performance Summary
@@ -76,6 +88,13 @@ def create_pdf_report(analytics_data):
     story.append(Paragraph(f"Overall Score: {analytics_data['score']:.1f}%", styles['Normal']))
     story.append(Paragraph(f"Average Time per Question: {analytics_data['avg_time']:.1f}s", styles['Normal']))
     story.append(Spacer(1, 20))
+
+    # Add performance charts
+    story.append(Paragraph("Performance Analysis", styles['Heading2']))
+    for title, fig in figures.items():
+        story.append(Paragraph(title, styles['Heading3']))
+        story.append(fig_to_img(fig))
+        story.append(Spacer(1, 20))
 
     # Analysis
     if analytics_data['notes_analysis']:
@@ -108,13 +127,15 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
     score = calculate_score(questions, answers)
     avg_time = sum(times)/len(times)
 
-    # Store analytics data
+    # Store analytics data and figures
     analytics_data = {
         "candidate_info": candidate_info,
         "score": score,
         "avg_time": avg_time,
         "notes_analysis": analyze_notes(notes, candidate_info["role"])
     }
+
+    figures = {}
 
     # Display performance overview
     st.header("📊 Performance Overview")
@@ -145,6 +166,7 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
         template="plotly_white"
     )
     st.plotly_chart(fig_time, use_container_width=True)
+    figures["Time Analysis"] = fig_time
 
     # Question performance with enhanced visuals
     correct_answers = [
@@ -160,6 +182,7 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
     )
     fig_performance.update_traces(textposition='inside', textinfo='percent+label')
     st.plotly_chart(fig_performance, use_container_width=True)
+    figures["Answer Distribution"] = fig_performance
 
     # Question-wise analysis with scatter plot
     df = pd.DataFrame({
@@ -181,6 +204,7 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
         }
     )
     st.plotly_chart(fig_scatter, use_container_width=True)
+    figures["Performance vs Time"] = fig_scatter
 
     # AI Analysis of notes
     if analytics_data['notes_analysis']:
@@ -203,6 +227,7 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
             }
         ))
         st.plotly_chart(fig_gauge, use_container_width=True)
+        figures["Role Fit Score"] = fig_gauge
 
         col1, col2 = st.columns(2)
         with col1:
@@ -223,11 +248,14 @@ def generate_analytics(questions, answers, times, notes, candidate_info):
         for rec in analytics_data['notes_analysis']['recommendations']:
             st.write(f"• {rec}")
 
-    # Generate PDF report
-    pdf_buffer = create_pdf_report(analytics_data)
+    # Generate PDF report with charts
+    pdf_buffer = create_pdf_report(analytics_data, figures)
+
+    # Get the current time in NY timezone for the filename
+    ny_now = datetime.now(ny_timezone)
     st.download_button(
         label="📥 Download Full Report (PDF)",
         data=pdf_buffer,
-        file_name=f"interview_report_{candidate_info['id']}_{datetime.now().strftime('%Y%m%d')}.pdf",
+        file_name=f"interview_report_{candidate_info['id']}_{ny_now.strftime('%Y%m%d_%H%M%S')}.pdf",
         mime="application/pdf"
     )
