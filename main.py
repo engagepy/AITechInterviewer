@@ -10,6 +10,7 @@ import PyPDF2
 import io
 import os
 from openai import OpenAI
+import pytz #Import pytz library
 
 # Initialize OpenAI client
 openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
@@ -166,10 +167,21 @@ def show_welcome_page():
     st.title("🚀 AI-Powered Technical Interview Platform")
     st.markdown("<p class='subtitle'>Experience the future of technical assessments with our cutting-edge AI platform.</p>", unsafe_allow_html=True)
 
-    # Begin Assessment Button
-    if st.button("BEGIN ASSESSMENT", use_container_width=True):
-        st.session_state.page = 'profile'
-        st.rerun()
+    # Add passcode protection
+    ist_time = datetime.now(pytz.timezone('Asia/Kolkata'))
+    correct_passcode = ist_time.strftime('%d%m%y')  # Format: ddmmyy
+
+    # Create a container for the passcode input and button
+    input_container = st.container()
+    with input_container:
+        passcode = st.text_input("Enter passcode", type="password")
+        if passcode == correct_passcode:
+            # Begin Assessment Button
+            if st.button("BEGIN ASSESSMENT", use_container_width=True):
+                st.session_state.page = 'profile'
+                st.rerun()
+        elif passcode:  # Only show error if something was entered
+            st.error("Invalid passcode")
 
     # Features section using columns
     st.markdown("<br>", unsafe_allow_html=True)
