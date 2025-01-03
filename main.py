@@ -156,7 +156,7 @@ def show_welcome_page():
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("Begin Assessment", use_container_width=True):
+    if st.button("BEGIN ASSESSMENT", use_container_width=True):
         st.session_state.page = 'profile'
         st.rerun()
 
