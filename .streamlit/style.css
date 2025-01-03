@@ -35,7 +35,7 @@
     background: linear-gradient(145deg, #ffffff, #f8f9fa);
 }
 
-/* Glow effect */
+/* Glow text */
 .glow-text {
     color: var(--primary-color);
     text-shadow: 0 0 10px rgba(26, 115, 232, 0.3);
@@ -149,3 +149,8 @@ li {
 .stFileUploader > div:hover {
     background: rgba(26, 115, 232, 0.05);
 }
+
+/* Hide Streamlit branding */
+#MainMenu {visibility: hidden;}
+footer {visibility: hidden;}
+header {visibility: hidden;}
