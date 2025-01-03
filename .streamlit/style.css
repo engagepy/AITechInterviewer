@@ -54,6 +54,23 @@ h1 .element-container:first-child .emoji {
     -webkit-text-fill-color: currentColor !important;
 }
 
+/* Ensure no gradient on emoji */
+h1 > div:first-child {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: currentColor !important;
+    color: white !important;
+}
+
+h1 > div:first-child .emoji {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    -webkit-text-fill-color: currentColor !important;
+    color: white !important;
+}
+
 .subtitle {
     font-size: 1.2rem;
     color: white;
@@ -130,13 +147,11 @@ h1 .element-container:first-child .emoji {
     color: var(--primary-color) !important;
     font-size: 1.5rem;
     margin: 1rem 0;
-
 }
 
 .feature-card p {
     color: var(--text-color) !important;
     line-height: 1.6;
-
 }
 
 /* Button styling */
@@ -171,7 +186,6 @@ h2, h3, h4, h5, h6 {
     margin: 1rem 0 !important;
     text-shadow: none !important;
     background: none !important;
-
 }
 
 /* Streamlit specific overrides */
@@ -179,7 +193,6 @@ h2, h3, h4, h5, h6 {
     color: white !important;
     text-shadow: none !important;
     background: none !important;
-
 }
 
 .stMarkdown {
@@ -194,7 +207,6 @@ p, li, label {
 /* Override for feature cards text */
 .feature-card * {
     color: var(--text-color) !important;
-
 }
 
 .feature-card .feature-icon {
@@ -214,7 +226,6 @@ p, li, label {
 
 .roles-section h2 {
     color: var(--primary-color) !important;
-
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     text-align: center;
