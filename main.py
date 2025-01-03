@@ -428,13 +428,17 @@ def show_interview_page():
                     help="Tools are suggested based on your CV and role requirements"
                 )
 
-                # Show recommendation indicator if the selected tool is recommended
+                # Show recommendation indicator and glowing badge if the selected tool is recommended
                 if tool in recommended_tools:
                     st.success("✨ This tool is recommended based on your experience")
+                    st.markdown("<div class='ai-badge'>🤖 AI Recommended</div>", unsafe_allow_html=True)
 
             difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"])
             with col2:
                 st.info(f"Difficulty Level: {difficulty}")
+                # Show AI recommendation badge if role matches suggested role
+                if st.session_state.candidate_info["role"] == st.session_state.suggested_role:
+                    st.markdown("<div class='ai-badge'>🤖 AI Recommended Role</div>", unsafe_allow_html=True)
 
             if st.form_submit_button("Begin Interview"):
                 with st.spinner("Generating questions..."):

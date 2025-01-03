@@ -210,3 +210,28 @@ p, li, label {
     position: absolute;
     left: 0;
 }
+
+/* AI Recommendation Badge */
+.ai-badge {
+    display: inline-block;
+    padding: 4px 8px;
+    margin: 4px 0;
+    border-radius: 4px;
+    background: linear-gradient(45deg, #1a73e8, #34a853);
+    color: white;
+    font-size: 0.8rem;
+    font-weight: 500;
+    animation: glow 2s ease-in-out infinite;
+}
+
+@keyframes glow {
+    0% {
+        box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+    }
+    50% {
+        box-shadow: 0 0 20px rgba(26, 115, 232, 0.8);
+    }
+    100% {
+        box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+    }
+}
