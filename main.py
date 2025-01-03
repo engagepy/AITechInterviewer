@@ -210,7 +210,7 @@ def show_interview_page():
                 st.info(f"Difficulty Level: {difficulty}")
 
             if st.form_submit_button("Begin Interview"):
-                with st.spinner("Initializing assessment..."):
+                with st.spinner("Generating questions..."):
                     questions = generate_questions(language, difficulty)
                     if questions:  # Only proceed if questions were generated successfully
                         st.session_state.questions = questions
@@ -218,8 +218,8 @@ def show_interview_page():
                         st.rerun()
                     else:
                         st.error("Failed to generate questions. Please try again.")
-                        if st.button("Retry"):
-                            st.rerun()
+                        time.sleep(2)  # Give user time to read the error
+                        st.rerun()
 
     else:
         # Progress bar

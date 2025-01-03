@@ -10,59 +10,85 @@ openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 def generate_questions(language, difficulty):
     prompt = f"""Generate 10 multiple choice questions for a {difficulty} level {language} programming interview.
     Each question should have 4 options with one correct answer.
-    Format the response as a JSON array where each question object has the following structure:
+    Format the response as a JSON object with a 'questions' array where each question object has:
     {{
-        "question": "question text",
-        "options": ["option1", "option2", "option3", "option4"],
-        "correct_answer": "correct option text"
+        "questions": [
+            {{
+                "question": "question text",
+                "options": ["option1", "option2", "option3", "option4"],
+                "correct_answer": "correct option text"
+            }}
+        ]
     }}
     Questions should test both theoretical knowledge and practical programming concepts."""
 
     try:
-        st.write("🤖 Connecting to AI service...")
+        # Initialize progress tracking
         progress_bar = st.progress(0)
+        st.write("🤖 Initializing...")
 
-        # Create the API request with a timeout
-        progress_bar.progress(25)
-        st.write("⚡ Generating questions...")
+        # Clear any previous error messages
+        if 'error' in st.session_state:
+            del st.session_state.error
 
+        progress_bar.progress(20)
+        st.write("⚡ Connecting to AI service...")
+
+        # Create the API request with increased timeout
         response = openai.chat.completions.create(
             model="gpt-4o",
             messages=[
-                {"role": "system", "content": "You are an expert programming interviewer."},
+                {"role": "system", "content": "You are an expert programming interviewer. Respond strictly in the requested JSON format."},
                 {"role": "user", "content": prompt}
             ],
             response_format={"type": "json_object"},
-            timeout=30  # 30 seconds timeout
+            timeout=60  # Increased timeout to 60 seconds
         )
 
-        progress_bar.progress(75)
+        progress_bar.progress(60)
         st.write("✨ Processing response...")
 
-        # Parse the response
+        # Parse and validate response
         try:
             response_content = response.choices[0].message.content
             response_json = json.loads(response_content)
+
+            # Validate JSON structure
+            if not isinstance(response_json, dict):
+                raise ValueError("Response is not a JSON object")
             if "questions" not in response_json:
                 raise ValueError("Response missing 'questions' array")
+            if not isinstance(response_json["questions"], list):
+                raise ValueError("'questions' is not an array")
+            if len(response_json["questions"]) != 10:
+                raise ValueError(f"Expected 10 questions, got {len(response_json['questions'])}")
+
             questions = response_json["questions"]
+
+            # Validate each question
+            for i, question in enumerate(questions):
+                if not all(key in question for key in ["question", "options", "correct_answer"]):
+                    raise ValueError(f"Question {i+1} missing required fields")
+                if not isinstance(question["options"], list):
+                    raise ValueError(f"Question {i+1} options is not an array")
+                if len(question["options"]) != 4:
+                    raise ValueError(f"Question {i+1} does not have exactly 4 options")
+                if question["correct_answer"] not in question["options"]:
+                    raise ValueError(f"Question {i+1} correct answer not in options")
+
+            progress_bar.progress(100)
+            st.write("✅ Questions ready!")
+            return questions
+
         except json.JSONDecodeError as e:
-            st.error("Failed to parse API response as JSON")
+            st.error(f"Invalid JSON format in API response: {str(e)}")
             return None
-        except KeyError as e:
-            st.error("Invalid response format from API")
+        except ValueError as e:
+            st.error(f"Invalid response format: {str(e)}")
             return None
-
-        # Validate the questions format
-        for question in questions:
-            if not all(key in question for key in ["question", "options", "correct_answer"]):
-                raise ValueError("Invalid question format in API response")
-            if question["correct_answer"] not in question["options"]:
-                raise ValueError("Correct answer not found in options")
-
-        progress_bar.progress(100)
-        st.write("✅ Questions ready!")
-        return questions
+        except Exception as e:
+            st.error(f"Error processing response: {str(e)}")
+            return None
 
     except Exception as e:
         st.error(f"Failed to generate questions: {str(e)}")
