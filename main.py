@@ -254,25 +254,27 @@ def collect_candidate_info():
                             st.session_state.suggested_difficulty = "Medium"
                             st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
-    # Only show the form after CV analysis
-    if st.session_state.cv_uploaded:
-        # Display CV Analysis outside the form
+    # Display CV Analysis outside the form if available
+    if st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
+        # Display analysis results
         st.success("✅ CV Analysis Complete!")
         st.markdown(f"""
         ### Analysis Results
         👤 **Candidate:** {st.session_state.candidate_name}
 
-        📋 **Suggested Role:** {analysis['suggested_role']}
+        📋 **Suggested Role:** {st.session_state.cv_analysis['suggested_role']}
 
-        🎓 **Education:** {analysis.get('education', 'Not specified')}
+        🎓 **Education:** {st.session_state.cv_analysis.get('education', 'Not specified')}
 
-        ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
+        ⚡ **Key Skills:** {', '.join(st.session_state.cv_analysis.get('key_skills', []))}
 
-        ⏳ **Experience:** {analysis['years_of_experience']}
+        ⏳ **Experience:** {st.session_state.cv_analysis['years_of_experience']}
 
-        💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
+        💻 **Technologies:** {', '.join(st.session_state.cv_analysis['recommended_languages'])}
         """)
 
+    # Only show the form after CV analysis
+    if st.session_state.cv_uploaded:
         # Create the form for additional information
         with st.form("candidate_profile_form"):
             with col2:
