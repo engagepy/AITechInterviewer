@@ -151,47 +151,49 @@ def show_welcome_page():
     st.markdown("""
     <div class="main-container">
         <h1>🚀 AI-Powered Technical Interview Platform</h1>
-
         <p class="subtitle">Experience the future of technical assessments with our cutting-edge AI platform.</p>
+
+        <div class="begin-assessment">
+            <button onclick="document.getElementById('begin-button').click()" class="streamlit-button">BEGIN ASSESSMENT</button>
+        </div>
+
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Analytics</h3>
+                <p>Comprehensive performance metrics and detailed insights</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Tailored Assessment</h3>
+                <p>Dynamic question generation based on expertise and experience</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">✨</div>
+                <h3>Instant Feedback</h3>
+                <p>Detailed reports and recommendations for improvement</p>
+            </div>
+        </div>
+
+        <div class="roles-section">
+            <h2>Expert assessment for multiple technical positions including:</h2>
+            <ul>
+                <li>Frontend, Backend, and Full Stack Developers</li>
+                <li>DevOps and Cloud Engineers</li>
+                <li>Product Managers</li>
+                <li>Salesforce Developers</li>
+                <li>Mobile Developers</li>
+            </ul>
+        </div>
     </div>
     """, unsafe_allow_html=True)
 
-    if st.button("BEGIN ASSESSMENT", use_container_width=True):
+    # Hidden button that will be triggered by the HTML button
+    if st.button("BEGIN ASSESSMENT", key="begin-button", use_container_width=True):
         st.session_state.page = 'profile'
         st.rerun()
-
-    st.markdown("""
-    <div class="features-grid">
-        <div class="feature-card">
-            <div class="feature-icon">📊</div>
-            <h3>Real-time Analytics</h3>
-            <p>Comprehensive performance metrics and detailed insights</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">🎯</div>
-            <h3>Tailored Assessment</h3>
-            <p>Dynamic question generation based on expertise and experience</p>
-        </div>
-
-        <div class="feature-card">
-            <div class="feature-icon">✨</div>
-            <h3>Instant Feedback</h3>
-            <p>Detailed reports and recommendations for improvement</p>
-        </div>
-    </div>
-
-    <div class="roles-section">
-        <h2>Expert assessment for multiple technical positions including:</h2>
-        <ul>
-            <li>Frontend, Backend, and Full Stack Developers</li>
-            <li>DevOps and Cloud Engineers</li>
-            <li>Product Managers</li>
-            <li>Salesforce Developers</li>
-            <li>Mobile Developers</li>
-        </ul>
-    </div>
-    """, unsafe_allow_html=True)
 
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
