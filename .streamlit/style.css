@@ -28,7 +28,15 @@ h1 {
     -webkit-background-clip: text !important;
     background-clip: text !important;
     color: transparent !important;
-    
+
+}
+
+/* Override for vectors and emojis within headings */
+h1 img, h1 svg, h1 .emoji {
+    background: none !important;
+    -webkit-background-clip: unset !important;
+    background-clip: unset !important;
+    color: currentColor !important;
 }
 
 .subtitle {
@@ -107,13 +115,13 @@ h1 {
     color: var(--primary-color) !important;
     font-size: 1.5rem;
     margin: 1rem 0;
-    
+
 }
 
 .feature-card p {
     color: var(--text-color) !important;
     line-height: 1.6;
-    
+
 }
 
 /* Button styling */
@@ -148,7 +156,7 @@ h2, h3, h4, h5, h6 {
     margin: 1rem 0 !important;
     text-shadow: none !important;
     background: none !important;
-    
+
 }
 
 /* Streamlit specific overrides */
@@ -156,7 +164,7 @@ h2, h3, h4, h5, h6 {
     color: white !important;
     text-shadow: none !important;
     background: none !important;
-    
+
 }
 
 .stMarkdown {
@@ -171,7 +179,7 @@ p, li, label {
 /* Override for feature cards text */
 .feature-card * {
     color: var(--text-color) !important;
-    
+
 }
 
 .feature-card .feature-icon {
@@ -191,7 +199,7 @@ p, li, label {
 
 .roles-section h2 {
     color: var(--primary-color) !important;
-    
+
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
     text-align: center;
