@@ -100,15 +100,18 @@ TECH_ROLES = {
 def analyze_cv(cv_content):
     """Analyze CV content and suggest a role"""
     try:
-        prompt = f"""Analyze this CV and suggest the most appropriate technical role from the following options: {', '.join(TECH_ROLES.keys())}.
-        Consider the candidate's experience, skills, and technologies mentioned.
-        For the selected role, also identify the most relevant programming languages or tools from their experience.
+        prompt = f"""Analyze this CV and extract the following information:
+        1. The candidate's full name from the CV
+        2. The most appropriate technical role from these options: {', '.join(TECH_ROLES.keys())}
+        3. Consider the candidate's experience, skills, and technologies mentioned.
+        4. For the selected role, identify the most relevant programming languages or tools.
 
         CV Content:
         {cv_content}
 
         Respond in JSON format with:
         {{
+            "candidate_name": "full name from CV",
             "suggested_role": "one of the roles listed above",
             "confidence": "score between 0 and 1",
             "reasoning": "brief explanation for the suggestion",
@@ -221,6 +224,7 @@ def collect_candidate_info():
                 with st.spinner("Analyzing your CV..."):
                     analysis = analyze_cv(cv_content)
                     if analysis:
+                        st.session_state.candidate_name = analysis["candidate_name"]
                         st.session_state.suggested_role = analysis["suggested_role"]
                         st.session_state.recommended_languages = analysis["recommended_languages"]
                         st.session_state.cv_uploaded = True
@@ -249,6 +253,8 @@ def collect_candidate_info():
                         st.success("✅ CV Analysis Complete!")
                         st.markdown(f"""
                         ### Analysis Results
+                        👤 **Candidate:** {analysis['candidate_name']}
+
                         📋 **Suggested Role:** {analysis['suggested_role']}
 
                         🔍 **Reasoning:** {analysis['reasoning']}
@@ -261,8 +267,6 @@ def collect_candidate_info():
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
-            name = st.text_input("Full Name")
-
             with col2:
                 st.markdown("### Start Your Assessment")
                 role = st.selectbox(
@@ -277,9 +281,9 @@ def collect_candidate_info():
             # Submit button inside the form
             submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
 
-            if submitted and name and role:
+            if submitted and role:
                 st.session_state.candidate_info = {
-                    "name": name,
+                    "name": st.session_state.candidate_name,
                     "role": role,
                     "id": st.session_state.candidate_id,
                     "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
