@@ -237,6 +237,11 @@ def collect_candidate_info():
     with col1:
         # Keep CV upload outside the form as it needs to trigger immediate analysis
         uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
+
+        # Create persistent containers for analysis and verifications
+        analysis_container = st.empty()
+        verification_container = st.empty()
+
         if uploaded_file is not None and not st.session_state.cv_uploaded:
             cv_content = extract_text_from_pdf(uploaded_file.getvalue())
             if cv_content:
@@ -249,8 +254,12 @@ def collect_candidate_info():
                         st.session_state.cv_uploaded = True
                         st.session_state.cv_analysis = analysis  # Store full analysis
 
-                        # Show verification animations and store the container
-                        st.session_state.animation_container = show_verification_animations()
+                        # Show verification animations in persistent container
+                        with verification_container.container():
+                            st.success("✅ LinkedIn API Verification (Success)")
+                            st.success("✅ Github Profile Analysis (Success)")
+                            st.success("✅ Past Experience Verification Emails (Sent)")
+                            st.success("✅ Culture Alignment (Verified)")
 
                         # Parse years of experience from detailed analysis
                         try:
@@ -274,51 +283,26 @@ def collect_candidate_info():
                             st.session_state.suggested_difficulty = "Medium"
                             st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
-                        # Display analysis results
-                        st.success("✅ CV Analysis Complete!")
-                        st.markdown(f"""
-                        ### Analysis Results
-                        👤 **Candidate:** {analysis['candidate_name']}
-
-                        📋 **Suggested Role:** {analysis['suggested_role']}
-
-                        🎓 **Education:** {analysis.get('education', 'Not specified')}
-
-                        ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
-
-                        ⏳ **Experience:** {analysis['years_of_experience']}
-                        {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
-
-                        💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
-                        """)
-
-        # Show the analysis results even after CV is uploaded
-        elif st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
+        # Always show analysis if CV is uploaded
+        if st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
             analysis = st.session_state.cv_analysis
-            st.success("✅ CV Analysis Complete!")
-            st.markdown(f"""
-            ### Analysis Results
-            👤 **Candidate:** {analysis['candidate_name']}
+            with analysis_container.container():
+                st.success("✅ CV Analysis Complete!")
+                st.markdown(f"""
+                ### Analysis Results
+                👤 **Candidate:** {analysis['candidate_name']}
 
-            📋 **Suggested Role:** {analysis['suggested_role']}
+                📋 **Suggested Role:** {analysis['suggested_role']}
 
-            🎓 **Education:** {analysis.get('education', 'Not specified')}
+                🎓 **Education:** {analysis.get('education', 'Not specified')}
 
-            ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
+                ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
 
-            ⏳ **Experience:** {analysis['years_of_experience']}
-            {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
+                ⏳ **Experience:** {analysis['years_of_experience']}
+                {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
 
-            💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
-            """)
-
-            # Re-show verification animations if they exist in session state
-            if hasattr(st.session_state, 'animation_container'):
-                with st.session_state.animation_container.container():
-                    st.success("✅ LinkedIn API Verification (Success)")
-                    st.success("✅ Github Profile Analysis (Success)")
-                    st.success("✅ Past Experience Verification Emails (Sent)")
-                    st.success("✅ Culture Alignment (Verified)")
+                💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
+                """)
 
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
@@ -480,6 +464,7 @@ def show_results_page():
         reset_session()
         st.rerun()
 
+
 def show_verification_animations():
     """Show dummy verification animations"""
     # Create a container for persistent animations
@@ -507,6 +492,7 @@ def show_verification_animations():
 
     # Return container to maintain the animations
     return animation_container
+
 
 
 def main():
