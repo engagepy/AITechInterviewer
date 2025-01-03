@@ -1,0 +1,72 @@
+/* Professional color scheme */
+:root {
+    --primary-color: #1a73e8;
+    --secondary-color: #34a853;
+    --background-color: #f8f9fa;
+    --text-color: #202124;
+}
+
+/* Main container styling */
+.main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Custom button styling */
+.stButton > button {
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 4px;
+    padding: 0.5rem 1rem;
+    border: none;
+    transition: all 0.3s ease;
+}
+
+.stButton > button:hover {
+    background-color: #1557b0;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+}
+
+/* Progress bar styling */
+.stProgress > div > div > div {
+    background-color: var(--secondary-color);
+}
+
+/* Card styling */
+.css-1r6slb0 {
+    background-color: white;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin: 1rem 0;
+}
+
+/* Metrics styling */
+.css-1r6slb0.e16nr0p30 {
+    text-align: center;
+    background: white;
+    padding: 1.5rem;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+/* Header styling */
+h1, h2, h3 {
+    color: var(--text-color);
+    margin-bottom: 1.5rem;
+}
+
+/* Input fields styling */
+.stTextInput > div > div > input {
+    border-radius: 4px;
+    border: 1px solid #dadce0;
+    padding: 0.5rem;
+}
+
+/* Selectbox styling */
+.stSelectbox > div > div > select {
+    border-radius: 4px;
+    border: 1px solid #dadce0;
+    padding: 0.5rem;
+}
