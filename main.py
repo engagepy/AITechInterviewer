@@ -227,15 +227,29 @@ def collect_candidate_info():
                         st.session_state.recommended_languages = analysis["recommended_languages"]
                         st.session_state.cv_uploaded = True
 
-                        # Auto-select difficulty based on experience
-                        years = float(analysis['years_of_experience'].split()[0])
-                        if years < 1:
-                            difficulty = "Easy"
-                        elif years < 3:
-                            difficulty = "Medium"
-                        else:
-                            difficulty = "Hard"
-                        st.session_state.suggested_difficulty = difficulty
+                        # Parse years of experience string to determine difficulty
+                        try:
+                            exp_str = analysis['years_of_experience'].lower().split()[0]  # Get first part of string
+                            if '-' in exp_str:
+                                # Handle range (e.g., "2-3")
+                                low, high = map(float, exp_str.split('-'))
+                                years = (low + high) / 2
+                            else:
+                                # Handle single number
+                                years = float(exp_str)
+
+                            # Determine difficulty based on experience
+                            if years < 1:
+                                difficulty = "Easy"
+                            elif years < 3:
+                                difficulty = "Medium"
+                            else:
+                                difficulty = "Hard"
+                            st.session_state.suggested_difficulty = difficulty
+                        except (ValueError, IndexError):
+                            # Default to Medium if parsing fails
+                            st.session_state.suggested_difficulty = "Medium"
+                            st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
                         # Display analysis results
                         st.success("✅ CV Analysis Complete!")
