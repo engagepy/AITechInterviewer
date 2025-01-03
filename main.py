@@ -495,16 +495,34 @@ def show_results_page():
     st.title("📊 Assessment Results")
 
     # Display candidate information
-    st.sidebar.success(f"""
-    ### Candidate Information
-    **ID:** {st.session_state.candidate_info['id']}
-    **Name:** {st.session_state.candidate_info['name']}
-    **Role:** {st.session_state.candidate_info['role']}
-    **Date:** {st.session_state.candidate_info['datetime']}
-    **CTC Range:** {st.session_state.candidate_info['ctc_range']}
-    **Preferred Location:** {st.session_state.candidate_info['preferred_location']}
-    **Willing to Relocate:** {st.session_state.candidate_info['willing_to_relocate']}
-    """)
+    st.sidebar.markdown("""
+    ### 📋 Candidate Information
+
+    • **ID:** {}
+
+    • **Name:** {}
+
+    • **Role:** {}
+
+    • **Tool:** {}
+
+    • **Date:** {}
+
+    • **CTC Range:** {}
+
+    • **Preferred Location:** {}
+
+    • **Willing to Relocate:** {}
+    """.format(
+        st.session_state.candidate_info['id'],
+        st.session_state.candidate_info['name'],
+        st.session_state.candidate_info['role'],
+        st.session_state.candidate_info['tool'],
+        st.session_state.candidate_info['datetime'],
+        st.session_state.candidate_info['ctc_range'],
+        st.session_state.candidate_info['preferred_location'],
+        st.session_state.candidate_info['willing_to_relocate']
+    ))
 
     # Generate and display analytics
     generate_analytics(
