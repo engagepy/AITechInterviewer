@@ -382,17 +382,9 @@ def collect_candidate_info():
             submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
 
             if submitted and role:
-                # Update the candidate_info dictionary to include the selected tool
-                tool = st.selectbox(
-                    "Select Tool",
-                    options=role_info["languages"],
-                    index=0,
-                    help="Tools are suggested based on your CV and role requirements"
-                )
                 st.session_state.candidate_info = {
                     "name": st.session_state.candidate_name,
                     "role": role,
-                    "tool": tool,  # Add the selected tool
                     "id": st.session_state.candidate_id,
                     "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
                     "ctc_range": ctc_range,
@@ -448,6 +440,8 @@ def show_interview_page():
                 with st.spinner("Generating questions..."):
                     questions = generate_questions(tool, difficulty)
                     if questions:
+                        # Update candidate_info with the selected tool
+                        st.session_state.candidate_info["tool"] = tool
                         st.session_state.questions = questions
                         st.session_state.start_time = time.time()
                         st.rerun()
@@ -500,7 +494,6 @@ def show_results_page():
     **ID:** {st.session_state.candidate_info['id']}
     **Name:** {st.session_state.candidate_info['name']}
     **Role:** {st.session_state.candidate_info['role']}
-    **Tool:** {st.session_state.candidate_info['tool']} #Added Tool information
     **Date:** {st.session_state.candidate_info['datetime']}
     **CTC Range:** {st.session_state.candidate_info['ctc_range']}
     **Preferred Location:** {st.session_state.candidate_info['preferred_location']}
