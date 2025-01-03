@@ -6,6 +6,13 @@ import json
 import uuid
 import pandas as pd
 from datetime import datetime
+import PyPDF2
+import io
+import os
+from openai import OpenAI
+
+# Initialize OpenAI client
+openai = OpenAI(api_key=os.environ.get("OPENAI_API_KEY"))
 
 # Page configuration
 st.set_page_config(
@@ -19,6 +26,7 @@ with open(".streamlit/style.css") as f:
     st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
 
 def initialize_session_state():
+    """Initialize all session state variables"""
     if 'current_question' not in st.session_state:
         st.session_state.current_question = 0
     if 'questions' not in st.session_state:
@@ -39,34 +47,84 @@ def initialize_session_state():
         st.session_state.profile_completed = False
     if 'candidate_info' not in st.session_state:
         st.session_state.candidate_info = {}
+    if 'cv_uploaded' not in st.session_state:
+        st.session_state.cv_uploaded = False
+    if 'suggested_role' not in st.session_state:
+        st.session_state.suggested_role = None
 
 def reset_session():
-    for key in st.session_state.keys():
+    """Reset all session state variables"""
+    for key in list(st.session_state.keys()):
         del st.session_state[key]
     initialize_session_state()
 
 TECH_ROLES = {
     "Frontend Developer": {
         "languages": ["JavaScript", "TypeScript"],
-        "difficulty": "Medium"
+        "difficulty": "Medium",
+        "keywords": ["react", "angular", "vue", "html", "css", "frontend", "ui", "ux"]
     },
     "Backend Developer": {
         "languages": ["Python", "Java", "Go"],
-        "difficulty": "Hard"
+        "difficulty": "Hard",
+        "keywords": ["backend", "api", "database", "server", "django", "spring", "golang"]
     },
     "Full Stack Developer": {
         "languages": ["JavaScript", "Python", "Java"],
-        "difficulty": "Hard"
+        "difficulty": "Hard",
+        "keywords": ["fullstack", "full-stack", "frontend", "backend", "web"]
     },
     "DevOps Engineer": {
         "languages": ["Python", "Go", "Shell"],
-        "difficulty": "Medium"
+        "difficulty": "Medium",
+        "keywords": ["devops", "ci/cd", "aws", "docker", "kubernetes", "infrastructure"]
     },
     "Mobile Developer": {
         "languages": ["Java", "Swift", "Kotlin"],
-        "difficulty": "Medium"
+        "difficulty": "Medium",
+        "keywords": ["mobile", "android", "ios", "react native", "flutter"]
     }
 }
+
+def analyze_cv(cv_content):
+    """Analyze CV content and suggest a role"""
+    try:
+        prompt = f"""Analyze this CV and suggest the most appropriate technical role from the following options: {', '.join(TECH_ROLES.keys())}.
+        Consider the candidate's experience, skills, and technologies mentioned.
+        CV Content:
+        {cv_content}
+
+        Respond in JSON format with:
+        {{
+            "suggested_role": "one of the roles listed above",
+            "confidence": "score between 0 and 1",
+            "reasoning": "brief explanation for the suggestion"
+        }}
+        """
+
+        response = openai.chat.completions.create(
+            model="gpt-4o",
+            messages=[{"role": "user", "content": prompt}],
+            response_format={"type": "json_object"}
+        )
+
+        return json.loads(response.choices[0].message.content)
+    except Exception as e:
+        st.error(f"Error analyzing CV: {str(e)}")
+        return None
+
+def extract_text_from_pdf(pdf_bytes):
+    """Extract text content from uploaded PDF"""
+    try:
+        pdf_file = io.BytesIO(pdf_bytes)
+        reader = PyPDF2.PdfReader(pdf_file)
+        text = ""
+        for page in reader.pages:
+            text += page.extract_text()
+        return text
+    except Exception as e:
+        st.error(f"Error reading PDF: {str(e)}")
+        return None
 
 def show_welcome_page():
     st.title("🚀 Welcome to AI-Powered Technical Interview Platform")
@@ -85,23 +143,40 @@ def show_welcome_page():
 
     if st.button("Begin Assessment", key="begin_assessment"):
         st.session_state.profile_completed = False
-        st.rerun()
+        st.experimental_rerun()
 
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
 
     col1, col2 = st.columns(2)
+
     with col1:
-        name = st.text_input("Full Name", key="name")
-        age = st.number_input("Age", min_value=18, max_value=100, value=25, key="age")
+        name = st.text_input("Full Name")
+        age = st.number_input("Age", min_value=18, max_value=100, value=25)
+
+        # CV Upload
+        uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
+        if uploaded_file is not None and not st.session_state.cv_uploaded:
+            cv_content = extract_text_from_pdf(uploaded_file.getvalue())
+            if cv_content:
+                with st.spinner("Analyzing your CV..."):
+                    analysis = analyze_cv(cv_content)
+                    if analysis:
+                        st.session_state.suggested_role = analysis["suggested_role"]
+                        st.session_state.cv_uploaded = True
+                        st.success(f"CV Analysis Complete! Suggested Role: {analysis['suggested_role']}")
+                        st.info(f"Reasoning: {analysis['reasoning']}")
 
     with col2:
         role = st.selectbox(
             "Position Applied For",
             options=list(TECH_ROLES.keys()),
-            key="role"
+            index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
         )
+        if st.session_state.suggested_role and role != st.session_state.suggested_role:
+            st.info("Note: You've selected a different role than suggested based on your CV.")
 
+    # Form submission handling
     if name and age and role:
         if st.button("Start Technical Interview"):
             st.session_state.candidate_info = {
@@ -112,7 +187,7 @@ def collect_candidate_info():
                 "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
             }
             st.session_state.profile_completed = True
-            st.rerun()
+            st.experimental_rerun()
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
@@ -135,7 +210,7 @@ def show_interview_page():
             with st.spinner("Preparing your technical assessment..."):
                 st.session_state.questions = generate_questions(language, difficulty)
             st.session_state.start_time = time.time()
-            st.rerun()
+            st.experimental_rerun()
 
     else:
         # Progress bar
@@ -173,7 +248,34 @@ def show_interview_page():
                         st.session_state.current_question += 1
                     else:
                         st.session_state.quiz_completed = True
-                    st.rerun()
+                    st.experimental_rerun()
+
+def show_results_page():
+    st.title("📊 Assessment Results")
+
+    # Display candidate information
+    st.sidebar.success(f"""
+    ### Candidate Information
+    **ID:** {st.session_state.candidate_info['id']}
+    **Name:** {st.session_state.candidate_info['name']}
+    **Role:** {st.session_state.candidate_info['role']}
+    **Date:** {st.session_state.candidate_info['datetime']}
+    """)
+
+    # Generate and display analytics
+    generate_analytics(
+        st.session_state.questions,
+        st.session_state.answers,
+        st.session_state.times,
+        st.session_state.notes,
+        st.session_state.candidate_info
+    )
+
+    col1, col2 = st.columns([1,1])
+    with col1:
+        if st.button("Start New Interview"):
+            reset_session()
+            st.experimental_rerun()
 
 def main():
     initialize_session_state()
@@ -190,31 +292,7 @@ def main():
     elif not st.session_state.quiz_completed:
         show_interview_page()
     else:
-        st.title("📊 Assessment Results")
-
-        # Display candidate information
-        st.sidebar.success(f"""
-        ### Candidate Information
-        **ID:** {st.session_state.candidate_info['id']}
-        **Name:** {st.session_state.candidate_info['name']}
-        **Role:** {st.session_state.candidate_info['role']}
-        **Date:** {st.session_state.candidate_info['datetime']}
-        """)
-
-        # Generate and display analytics
-        generate_analytics(
-            st.session_state.questions,
-            st.session_state.answers,
-            st.session_state.times,
-            st.session_state.notes,
-            st.session_state.candidate_info
-        )
-
-        col1, col2 = st.columns([1,1])
-        with col1:
-            if st.button("Start New Interview"):
-                reset_session()
-                st.rerun()
+        show_results_page()
 
 if __name__ == "__main__":
     main()
