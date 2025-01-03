@@ -22,8 +22,14 @@ ny_timezone = pytz.timezone('America/New_York')
 
 def fig_to_img(fig, width=500):
     """Convert plotly figure to reportlab Image"""
-    img_bytes = fig.to_image(format="png", width=width)
-    return Image(io.BytesIO(img_bytes), width=width, height=width * 0.6)
+    # Convert to SVG and encode to base64
+    svg_str = fig.to_image(format="svg")
+
+    # Create a temporary file-like object to hold the SVG data
+    img_buffer = io.BytesIO(svg_str)
+
+    # Create and return the Image object
+    return Image(img_buffer, width=width, height=width * 0.6)
 
 def calculate_score(questions, answers):
     correct = 0
