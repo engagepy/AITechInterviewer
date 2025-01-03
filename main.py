@@ -212,9 +212,16 @@ def show_interview_page():
 
             if st.form_submit_button("Begin Interview"):
                 with st.spinner("Preparing your technical assessment..."):
-                    st.session_state.questions = generate_questions(language, difficulty)
-                st.session_state.start_time = time.time()
-                st.rerun()
+                    questions = generate_questions(language, difficulty)
+                    if questions:  # Only proceed if questions were generated successfully
+                        st.session_state.questions = questions
+                        st.session_state.start_time = time.time()
+                        st.rerun()
+                    else:
+                        st.error("Failed to generate questions. Please try again.")
+                        # Add a retry button
+                        if st.button("Retry"):
+                            st.rerun()
 
     else:
         # Progress bar
