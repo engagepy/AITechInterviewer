@@ -139,7 +139,7 @@ def show_welcome_page():
 
     if st.button("Begin Assessment"):
         st.session_state.page = 'profile'
-        st.experimental_rerun()
+        st.rerun()
 
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
@@ -190,7 +190,7 @@ def collect_candidate_info():
             }
             st.session_state.profile_completed = True
             st.session_state.page = 'interview'
-            st.experimental_rerun()
+            st.rerun()
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
@@ -214,7 +214,7 @@ def show_interview_page():
                 with st.spinner("Preparing your technical assessment..."):
                     st.session_state.questions = generate_questions(language, difficulty)
                 st.session_state.start_time = time.time()
-                st.experimental_rerun()
+                st.rerun()
 
     else:
         # Progress bar
@@ -249,7 +249,7 @@ def show_interview_page():
                 else:
                     st.session_state.quiz_completed = True
                     st.session_state.page = 'results'
-                st.experimental_rerun()
+                st.rerun()
 
 def show_results_page():
     st.title("📊 Assessment Results")
@@ -274,7 +274,7 @@ def show_results_page():
 
     if st.button("Start New Interview"):
         reset_session()
-        st.experimental_rerun()
+        st.rerun()
 
 def main():
     initialize_session_state()
