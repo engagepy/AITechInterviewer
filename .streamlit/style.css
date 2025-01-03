@@ -10,19 +10,41 @@
 }
 
 /* Main container styling */
-.main {
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-    background: var(--background-color);
+.main-container {
+    text-align: center;
+    margin-bottom: 2rem;
 }
 
-/* Futuristic card styling */
+.main-container h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 10px rgba(26, 115, 232, 0.3);
+}
+
+.subtitle {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: 2rem;
+}
+
+/* Features grid */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    margin: 3rem 0;
+}
+
+/* Feature cards */
 .feature-card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 1.5rem;
-    margin: 1rem 0;
+    padding: 2rem;
+    text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
     border: 1px solid rgba(26, 115, 232, 0.1);
@@ -31,8 +53,85 @@
 .feature-card:hover {
     transform: translateY(-5px);
     box-shadow: 0 8px 15px rgba(26, 115, 232, 0.2);
-    border: 1px solid rgba(26, 115, 232, 0.2);
-    background: linear-gradient(145deg, #ffffff, #f8f9fa);
+}
+
+.feature-card h3 {
+    color: var(--primary-color);
+    font-size: 1.5rem;
+    margin: 1rem 0;
+}
+
+.feature-card p {
+    color: var(--text-color);
+    line-height: 1.6;
+}
+
+/* Feature icons */
+.feature-icon {
+    font-size: 2.5rem;
+    margin-bottom: 1rem;
+}
+
+/* Roles section */
+.roles-section {
+    background: var(--card-bg);
+    border-radius: 12px;
+    padding: 2rem;
+    margin-top: 3rem;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+.roles-section h2 {
+    color: var(--primary-color);
+    font-size: 1.8rem;
+    margin-bottom: 1.5rem;
+}
+
+.roles-section ul {
+    list-style-type: none;
+    padding: 0;
+}
+
+.roles-section li {
+    color: var(--text-color);
+    margin: 0.8rem 0;
+    font-size: 1.1rem;
+    padding-left: 1.5rem;
+    position: relative;
+}
+
+.roles-section li:before {
+    content: "•";
+    color: var(--primary-color);
+    position: absolute;
+    left: 0;
+}
+
+/* Button styling */
+.stButton > button {
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    color: white;
+    padding: 0.75rem 2rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 500;
+    transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 1rem 0;
+}
+
+.stButton > button:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
+}
+
+/* Main container styling */
+.main {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+    background: var(--background-color);
 }
 
 /* Glow text */
@@ -45,25 +144,6 @@
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
-}
-
-/* Custom button styling */
-.stButton > button {
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: white;
-    border-radius: 8px;
-    padding: 0.75rem 1.5rem;
-    border: none;
-    transition: all 0.3s ease;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    font-weight: 500;
-}
-
-.stButton > button:hover {
-    background: linear-gradient(135deg, var(--hover-color), var(--primary-color));
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
 }
 
 /* Section headings */
@@ -83,39 +163,6 @@ h3 {
     color: var(--text-color);
 }
 
-/* Feature icons */
-.feature-icon {
-    font-size: 2.5rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    margin-bottom: 1rem;
-}
-
-/* Grid layout for features */
-.features-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-    gap: 1.5rem;
-    margin: 2rem 0;
-}
-
-/* Text styling */
-p {
-    color: var(--text-color);
-    line-height: 1.6;
-    margin-bottom: 1rem;
-}
-
-ul {
-    color: var(--text-color);
-    margin-left: 1.5rem;
-}
-
-li {
-    margin-bottom: 0.5rem;
-    color: var(--text-color);
-}
 
 /* Progress indicators */
 .stProgress > div > div > div {

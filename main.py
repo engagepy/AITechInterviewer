@@ -149,55 +149,49 @@ def extract_text_from_pdf(pdf_bytes):
 
 def show_welcome_page():
     st.markdown("""
-        <h1 class="glow-text">🚀 AI-Powered Technical Interview Platform</h1>
+    <div class="main-container">
+        <h1>🚀 AI-Powered Technical Interview Platform</h1>
 
-        <div class="feature-card">
-            <h2>Transform Your Technical Hiring Process</h2>
-            <p>Experience the future of technical assessments with our cutting-edge AI platform.</p>
-        </div>
-
-        <div class="features-grid">
-            <div class="feature-card">
-                <div class="feature-icon">🤖</div>
-                <h3>AI-Powered Analysis</h3>
-                <p>Smart CV analysis and role recommendations using advanced AI algorithms</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">📊</div>
-                <h3>Real-time Analytics</h3>
-                <p>Comprehensive performance metrics and detailed insights</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">🎯</div>
-                <h3>Tailored Assessment</h3>
-                <p>Dynamic question generation based on expertise and experience</p>
-            </div>
-
-            <div class="feature-card">
-                <div class="feature-icon">⚡</div>
-                <h3>Instant Feedback</h3>
-                <p>Detailed reports and recommendations for improvement</p>
-            </div>
-        </div>
-
-        <div class="feature-card">
-            <h3>Supported Roles</h3>
-            <p>Expert assessment for multiple technical positions including:</p>
-            <ul>
-                <li>Frontend, Backend, and Full Stack Developers</li>
-                <li>DevOps and Cloud Engineers</li>
-                <li>Product Managers</li>
-                <li>Salesforce Developers</li>
-                <li>Mobile Developers</li>
-            </ul>
-        </div>
+        <p class="subtitle">Experience the future of technical assessments with our cutting-edge AI platform.</p>
+    </div>
     """, unsafe_allow_html=True)
 
     if st.button("Begin Assessment", use_container_width=True):
         st.session_state.page = 'profile'
         st.rerun()
+
+    st.markdown("""
+    <div class="features-grid">
+        <div class="feature-card">
+            <div class="feature-icon">📊</div>
+            <h3>Real-time Analytics</h3>
+            <p>Comprehensive performance metrics and detailed insights</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">🎯</div>
+            <h3>Tailored Assessment</h3>
+            <p>Dynamic question generation based on expertise and experience</p>
+        </div>
+
+        <div class="feature-card">
+            <div class="feature-icon">✨</div>
+            <h3>Instant Feedback</h3>
+            <p>Detailed reports and recommendations for improvement</p>
+        </div>
+    </div>
+
+    <div class="roles-section">
+        <h2>Expert assessment for multiple technical positions including:</h2>
+        <ul>
+            <li>Frontend, Backend, and Full Stack Developers</li>
+            <li>DevOps and Cloud Engineers</li>
+            <li>Product Managers</li>
+            <li>Salesforce Developers</li>
+            <li>Mobile Developers</li>
+        </ul>
+    </div>
+    """, unsafe_allow_html=True)
 
 def collect_candidate_info():
     st.title("📝 Candidate Profile")
