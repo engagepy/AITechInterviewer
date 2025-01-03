@@ -271,6 +271,24 @@ def collect_candidate_info():
                         💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
 
+        # Show the analysis results even after CV is uploaded
+        elif st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
+            analysis = st.session_state.cv_analysis
+            st.success("✅ CV Analysis Complete!")
+            st.markdown(f"""
+            ### Analysis Results
+            👤 **Candidate:** {analysis['candidate_name']}
+
+            📋 **Suggested Role:** {analysis['suggested_role']}
+
+            🎓 **Education:** {analysis.get('education', 'Not specified')}
+
+            ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
+
+            ⏳ **Experience:** {analysis['years_of_experience']}
+
+            💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
+            """)
 
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
