@@ -368,7 +368,6 @@ def collect_candidate_info():
     else:
         st.info("👆 Please upload your CV to proceed with the assessment")
 
-
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
 
