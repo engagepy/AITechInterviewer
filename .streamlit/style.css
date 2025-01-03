@@ -11,23 +11,16 @@
 
 /* Main container styling */
 .main-container {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.main-container h1 {
-    font-size: 3rem;
-    font-weight: 700;
-    margin-bottom: 1rem;
-    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    text-shadow: 0 0 10px rgba(26, 115, 232, 0.3);
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 2rem;
 }
 
 .subtitle {
     font-size: 1.2rem;
     color: var(--text-color);
+    opacity: 0.8;
+    text-align: center;
     margin-bottom: 2rem;
 }
 
@@ -43,11 +36,11 @@
 .feature-card {
     background: var(--card-bg);
     border-radius: 12px;
-    padding: 2rem;
+    padding: 1.5rem;
     text-align: center;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: all 0.3s ease;
-    border: 1px solid rgba(26, 115, 232, 0.1);
+    height: 100%;
 }
 
 .feature-card:hover {
@@ -85,32 +78,26 @@
     color: var(--primary-color);
     font-size: 1.8rem;
     margin-bottom: 1.5rem;
+    text-align: center;
 }
 
 .roles-section ul {
     list-style-type: none;
     padding: 0;
+    margin: 0;
+    text-align: center;
 }
 
 .roles-section li {
     color: var(--text-color);
     margin: 0.8rem 0;
     font-size: 1.1rem;
-    padding-left: 1.5rem;
-    position: relative;
-}
-
-.roles-section li:before {
-    content: "•";
-    color: var(--primary-color);
-    position: absolute;
-    left: 0;
 }
 
 /* Button styling */
 .stButton > button {
     background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
-    color: white;
+    color: white !important;
     padding: 0.75rem 2rem;
     border-radius: 8px;
     border: none;
@@ -119,6 +106,7 @@
     text-transform: uppercase;
     letter-spacing: 1px;
     margin: 1rem 0;
+    width: 100%;
 }
 
 .stButton > button:hover {
@@ -130,3 +118,13 @@
 #MainMenu {visibility: hidden;}
 footer {visibility: hidden;}
 header {visibility: hidden;}
+
+/* Title styling */
+h1 {
+    text-align: center;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 2.5rem !important;
+    margin-bottom: 1rem !important;
+}
