@@ -148,21 +148,54 @@ def extract_text_from_pdf(pdf_bytes):
         return None
 
 def show_welcome_page():
-    st.title("🚀 Welcome to AI-Powered Technical Interview Platform")
-
     st.markdown("""
-    ### Transform Your Technical Hiring Process
+        <h1 class="glow-text">🚀 AI-Powered Technical Interview Platform</h1>
 
-    Our cutting-edge AI-powered platform revolutionizes technical interviews by:
-    - 🤖 Leveraging advanced AI to generate tailored questions
-    - 📊 Providing real-time analytics and insights
-    - 🎯 Ensuring fair and consistent evaluation
-    - ⏱️ Saving time and resources in the hiring process
+        <div class="feature-card">
+            <h2>Transform Your Technical Hiring Process</h2>
+            <p>Experience the future of technical assessments with our cutting-edge AI platform.</p>
+        </div>
 
-    Let's get started with your technical assessment!
-    """)
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon">🤖</div>
+                <h3>AI-Powered Analysis</h3>
+                <p>Smart CV analysis and role recommendations using advanced AI algorithms</p>
+            </div>
 
-    if st.button("Begin Assessment"):
+            <div class="feature-card">
+                <div class="feature-icon">📊</div>
+                <h3>Real-time Analytics</h3>
+                <p>Comprehensive performance metrics and detailed insights</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">🎯</div>
+                <h3>Tailored Assessment</h3>
+                <p>Dynamic question generation based on expertise and experience</p>
+            </div>
+
+            <div class="feature-card">
+                <div class="feature-icon">⚡</div>
+                <h3>Instant Feedback</h3>
+                <p>Detailed reports and recommendations for improvement</p>
+            </div>
+        </div>
+
+        <div class="feature-card">
+            <h3>Supported Roles</h3>
+            <p>Expert assessment for multiple technical positions including:</p>
+            <ul>
+                <li>Frontend, Backend, and Full Stack Developers</li>
+                <li>DevOps and Cloud Engineers</li>
+                <li>Product Managers</li>
+                <li>Salesforce Developers</li>
+                <li>Mobile Developers</li>
+            </ul>
+        </div>
+    """, unsafe_allow_html=True)
+
+    if st.button("Begin Assessment", use_container_width=True):
         st.session_state.page = 'profile'
         st.rerun()
 
@@ -173,7 +206,6 @@ def collect_candidate_info():
 
     with col1:
         name = st.text_input("Full Name")
-        age = st.number_input("Age", min_value=18, max_value=100, value=25)
 
         # CV Upload outside the form
         uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
@@ -187,6 +219,16 @@ def collect_candidate_info():
                         st.session_state.recommended_languages = analysis["recommended_languages"]
                         st.session_state.cv_uploaded = True
 
+                        # Auto-select difficulty based on experience
+                        years = float(analysis['years_of_experience'].split()[0])
+                        if years < 1:
+                            difficulty = "Easy"
+                        elif years < 3:
+                            difficulty = "Medium"
+                        else:
+                            difficulty = "Hard"
+                        st.session_state.suggested_difficulty = difficulty
+
                         # Display analysis results
                         st.success("✅ CV Analysis Complete!")
                         st.markdown(f"""
@@ -195,41 +237,42 @@ def collect_candidate_info():
 
                         🔍 **Reasoning:** {analysis['reasoning']}
 
-                        ⏳ **Experience:** {analysis['years_of_experience']} years
+                        ⏳ **Experience:** {analysis['years_of_experience']}
 
                         💻 **Recommended Technologies:** {', '.join(analysis['recommended_languages'])}
                         """)
+
 
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
         with st.form("candidate_profile_form"):
             with col2:
+                st.markdown("### Start Your Assessment")
                 role = st.selectbox(
-                    "Position Applied For",
+                    "Expertise",
                     options=list(TECH_ROLES.keys()),
                     index=list(TECH_ROLES.keys()).index(st.session_state.suggested_role) if st.session_state.suggested_role else 0
                 )
 
                 if st.session_state.suggested_role and role != st.session_state.suggested_role:
-                    st.info("Note: You've selected a different role than suggested based on your CV.")
+                    st.info("Note: You've selected a different expertise than suggested based on your CV.")
 
-            # Submit button
-            submitted = st.form_submit_button("Start Technical Interview")
+                # Submit button with better visibility
+                st.markdown("<br>", unsafe_allow_html=True)
+                submitted = st.form_submit_button("Start Technical Interview", use_container_width=True)
 
-            if submitted and name and age and role:
-                st.session_state.candidate_info = {
-                    "name": name,
-                    "age": age,
-                    "role": role,
-                    "id": st.session_state.candidate_id,
-                    "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-                }
-                st.session_state.profile_completed = True
-                st.session_state.page = 'interview'
-                st.rerun()
+                if submitted and name and role:
+                    st.session_state.candidate_info = {
+                        "name": name,
+                        "role": role,
+                        "id": st.session_state.candidate_id,
+                        "datetime": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+                    }
+                    st.session_state.profile_completed = True
+                    st.session_state.page = 'interview'
+                    st.rerun()
     else:
         st.info("👆 Please upload your CV to proceed with the assessment")
-
 
 def show_interview_page():
     role_info = TECH_ROLES[st.session_state.candidate_info["role"]]
@@ -245,7 +288,7 @@ def show_interview_page():
                     options=role_info["languages"]
                 )
 
-            difficulty = role_info["difficulty"]
+            difficulty = st.session_state.get('suggested_difficulty', role_info["difficulty"]) #Use suggested difficulty if available
             with col2:
                 st.info(f"Difficulty Level: {difficulty}")
 

@@ -2,8 +2,10 @@
 :root {
     --primary-color: #1a73e8;
     --secondary-color: #34a853;
+    --accent-color: #4285f4;
     --background-color: #f8f9fa;
     --text-color: #202124;
+    --hover-color: #1557b0;
 }
 
 /* Main container styling */
@@ -11,62 +13,108 @@
     padding: 2rem;
     max-width: 1200px;
     margin: 0 auto;
+    background: var(--background-color);
+}
+
+/* Futuristic card styling */
+.feature-card {
+    background: rgba(255, 255, 255, 0.9);
+    border-radius: 12px;
+    padding: 1.5rem;
+    margin: 1rem 0;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    backdrop-filter: blur(10px);
+}
+
+.feature-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 8px 15px rgba(26, 115, 232, 0.2);
+}
+
+/* Glow effect */
+.glow-text {
+    color: var(--primary-color);
+    text-shadow: 0 0 10px rgba(26, 115, 232, 0.5);
 }
 
 /* Custom button styling */
 .stButton > button {
-    background-color: var(--primary-color);
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
     color: white;
-    border-radius: 4px;
-    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    padding: 0.75rem 1.5rem;
     border: none;
     transition: all 0.3s ease;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    font-weight: 500;
 }
 
 .stButton > button:hover {
-    background-color: #1557b0;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    background: linear-gradient(135deg, var(--hover-color), var(--primary-color));
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(26, 115, 232, 0.3);
 }
 
-/* Progress bar styling */
-.stProgress > div > div > div {
-    background-color: var(--secondary-color);
-}
-
-/* Card styling */
-.css-1r6slb0 {
-    background-color: white;
-    border-radius: 8px;
-    padding: 1.5rem;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-    margin: 1rem 0;
-}
-
-/* Metrics styling */
-.css-1r6slb0.e16nr0p30 {
-    text-align: center;
-    background: white;
-    padding: 1.5rem;
-    border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-}
-
-/* Header styling */
+/* Section headings */
 h1, h2, h3 {
     color: var(--text-color);
     margin-bottom: 1.5rem;
+    font-weight: 600;
 }
 
-/* Input fields styling */
+h1 {
+    font-size: 2.5rem;
+    background: linear-gradient(135deg, var(--primary-color), var(--accent-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+/* Feature icons */
+.feature-icon {
+    font-size: 2rem;
+    color: var(--primary-color);
+    margin-bottom: 1rem;
+}
+
+/* Grid layout for features */
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1.5rem;
+    margin: 2rem 0;
+}
+
+/* Progress indicators */
+.stProgress > div > div > div {
+    background: linear-gradient(90deg, var(--primary-color), var(--accent-color));
+}
+
+/* Form inputs */
 .stTextInput > div > div > input {
-    border-radius: 4px;
-    border: 1px solid #dadce0;
-    padding: 0.5rem;
+    border-radius: 8px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    padding: 0.75rem;
+    transition: all 0.3s ease;
 }
 
-/* Selectbox styling */
-.stSelectbox > div > div > select {
-    border-radius: 4px;
-    border: 1px solid #dadce0;
-    padding: 0.5rem;
+.stTextInput > div > div > input:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 2px rgba(26, 115, 232, 0.2);
+}
+
+/* File uploader */
+.stFileUploader > div {
+    border: 2px dashed var(--primary-color);
+    border-radius: 12px;
+    padding: 2rem;
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.stFileUploader > div:hover {
+    background: rgba(26, 115, 232, 0.05);
 }
