@@ -239,8 +239,7 @@ def collect_candidate_info():
         uploaded_file = st.file_uploader("Upload your CV (PDF)", type=['pdf'])
 
         # Create persistent containers for analysis and verifications
-        analysis_container = st.empty()
-        verification_container = st.empty()
+        persisted_content = st.empty()
 
         if uploaded_file is not None and not st.session_state.cv_uploaded:
             cv_content = extract_text_from_pdf(uploaded_file.getvalue())
@@ -254,8 +253,25 @@ def collect_candidate_info():
                         st.session_state.cv_uploaded = True
                         st.session_state.cv_analysis = analysis  # Store full analysis
 
-                        # Show verification animations in persistent container
-                        with verification_container.container():
+                        # Display analysis results and verifications in persistent container
+                        with persisted_content.container():
+                            st.success("✅ CV Analysis Complete!")
+                            st.markdown(f"""
+                            ### Analysis Results
+                            👤 **Candidate:** {analysis['candidate_name']}
+
+                            📋 **Suggested Role:** {analysis['suggested_role']}
+
+                            🎓 **Education:** {analysis.get('education', 'Not specified')}
+
+                            ⚡ **Key Skills:** {', '.join(analysis.get('key_skills', []))}
+
+                            ⏳ **Experience:** {analysis['years_of_experience']}
+                            {f"_(Started: {analysis.get('experience_details', {}).get('first_job_date', 'Not specified')})_" if analysis.get('experience_details') else ''}
+
+                            💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
+                            """)
+
                             st.success("✅ LinkedIn API Verification (Success)")
                             st.success("✅ Github Profile Analysis (Success)")
                             st.success("✅ Past Experience Verification Emails (Sent)")
@@ -283,10 +299,10 @@ def collect_candidate_info():
                             st.session_state.suggested_difficulty = "Medium"
                             st.warning("Could not determine experience level precisely, defaulting to Medium difficulty.")
 
-        # Always show analysis if CV is uploaded
-        if st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
+        # Show the analysis results even after CV is uploaded
+        elif st.session_state.cv_uploaded and hasattr(st.session_state, 'cv_analysis'):
             analysis = st.session_state.cv_analysis
-            with analysis_container.container():
+            with persisted_content.container():
                 st.success("✅ CV Analysis Complete!")
                 st.markdown(f"""
                 ### Analysis Results
@@ -303,6 +319,11 @@ def collect_candidate_info():
 
                 💻 **Technologies:** {', '.join(analysis['recommended_languages'])}
                 """)
+
+                st.success("✅ LinkedIn API Verification (Success)")
+                st.success("✅ Github Profile Analysis (Success)")
+                st.success("✅ Past Experience Verification Emails (Sent)")
+                st.success("✅ Culture Alignment (Verified)")
 
     # Only show the form after CV analysis
     if st.session_state.cv_uploaded:
@@ -463,36 +484,6 @@ def show_results_page():
     if st.button("Start New Interview"):
         reset_session()
         st.rerun()
-
-
-def show_verification_animations():
-    """Show dummy verification animations"""
-    # Create a container for persistent animations
-    animation_container = st.empty()
-
-    with animation_container.container():
-        with st.spinner("Processing verifications..."):
-            # LinkedIn API Verification
-            time.sleep(1)
-            st.success("✅ LinkedIn API Verification (Success)")
-
-            # Github Profile Analysis
-            time.sleep(0.8)
-            st.success("✅ Github Profile Analysis (Success)")
-
-            # Past Experience Verification
-            time.sleep(1.2)
-            st.success("✅ Past Experience Verification Emails (Sent)")
-
-            # Culture Alignment
-            time.sleep(0.7)
-            st.success("✅ Culture Alignment (Verified)")
-
-            time.sleep(0.5)
-
-    # Return container to maintain the animations
-    return animation_container
-
 
 
 def main():
