@@ -238,7 +238,7 @@ def show_welcome_page():
             <div class="mini-ai-badge">AI</div>
             <div class="feature-icon">✨</div>
             <h3>Instant Feedback</h3>
-            <p>Detailed reports and recommendations for improvement</p>
+            <p>Detailed reports and recommendations for candidate matching</p>
         </div>
         """, unsafe_allow_html=True)
 

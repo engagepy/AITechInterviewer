@@ -78,7 +78,6 @@ h1 .element-container:first-child .emoji {
     -webkit-text-fill-color: currentColor !important;
 }
 
-
 .subtitle {
     font-size: 1.2rem;
     color: white;
@@ -286,5 +285,47 @@ p, li, label {
     }
     100% {
         box-shadow: 0 0 5px rgba(26, 115, 232, 0.5);
+    }
+}
+
+/* Mobile-specific overrides */
+@media screen and (max-width: 768px) {
+    /* Ensure consistent background color */
+    .stApp {
+        background-color: var(--background-color) !important;
+    }
+
+    /* Maintain text colors */
+    .stMarkdown, p, li, label {
+        color: var(--text-color) !important;
+    }
+
+    /* Feature cards background */
+    .feature-card {
+        background: var(--card-bg) !important;
+        border: 1px solid rgba(26, 115, 232, 0.2) !important;
+    }
+
+    /* Button colors */
+    .stButton > button {
+        background: linear-gradient(135deg, var(--primary-color), var(--accent-color)) !important;
+        color: white !important;
+    }
+
+    /* Headings */
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--text-color) !important;
+    }
+
+    /* AI badges */
+    .ai-badge, .mini-ai-badge {
+        background: linear-gradient(45deg, var(--primary-color), var(--secondary-color)) !important;
+        color: white !important;
+    }
+
+    /* Form inputs */
+    .stTextInput > div > div {
+        background-color: var(--background-color) !important;
+        color: var(--text-color) !important;
     }
 }
