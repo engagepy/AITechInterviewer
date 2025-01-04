@@ -17,6 +17,15 @@
     background-color: var(--background-color);
 }
 
+/* Remove any default Streamlit header styling */
+.stApp > header {
+    display: none !important;
+}
+
+.stApp {
+    background-color: var(--background-color) !important;
+}
+
 /* Title styling */
 h1 {
     text-align: center;
