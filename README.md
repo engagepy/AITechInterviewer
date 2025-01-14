@@ -2,7 +2,7 @@
 
 An advanced AI-powered technical assessment platform that transforms technical recruiting through intelligent, adaptive evaluation tools. The platform provides comprehensive, data-driven candidate assessments across multiple professional domains with a focus on seamless user experience and cutting-edge technology.
 
-<img width="1482" alt="Screenshot 2025-01-04 at 19 42 56" src="https://github.com/user-attachments/assets/aa3c9add-a67f-4223-b4e1-31c7b3649dc2" />
+<img width="2523" alt="Screenshot 2025-01-15 at 05 03 06" src="https://github.com/user-attachments/assets/b2163d92-eae8-43bc-a8d2-aff8dd048596" />
 
 
 ## Features ✨
